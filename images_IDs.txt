@@ -1,0 +1,31 @@
+folder BLA
+    subfolder 0001-1000
+        BLA_00001.jpg - BLA_01000.jpg
+    subfolder 1001-2000
+        BLA_01001.jpg - BLA_02000.jpg
+    subfolder 2001-3000
+        BLA_02001.jpg - BLA_03000.jpg
+
+folder EBO
+    subfolder 0001-1000
+        EBO_00001.jpg - EBO_01000.jpg
+    subfolder 1001-2000
+        EBO_01001.jpg - EBO_02000.jpg
+    subfolder 2001-3000
+        EBO_02001.jpg - EBO_03000.jpg
+
+folder MMZ
+    subfolder 0001-1000
+        MMZ_00001.jpg - MMZ_01000.jpg
+    subfolder 1001-2000
+        MMZ_01001.jpg - MMZ_02000.jpg
+    subfolder 2001-3000
+        MMZ_02001.jpg - MMZ_03000.jpg
+
+folder NGS
+    subfolder 0001-1000
+        NGS_00001.jpg - NGS_01000.jpg
+    subfolder 1001-2000
+        NGS_01001.jpg - NGS_02000.jpg
+    subfolder 2001-3000
+        NGS_02001.jpg - NGS_03000.jpg
