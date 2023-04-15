@@ -1,6 +1,6 @@
 import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
-from parameters import BATCH, IMG_SIZE, classes, img_path, augmentation_params, train_params
+from parameters import img_path, augmentation_params, train_params
 
 
 def dataset_generator(img_path, augmentation_params, train_params):
