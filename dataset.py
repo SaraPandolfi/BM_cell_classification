@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.python.keras import layers
 from keras.preprocessing.image import ImageDataGenerator
 from parameters import BATCH, IMG_SIZE, classes, img_path, augmentation_params, train_params
 

@@ -1,5 +1,8 @@
 # Ignore pytest cache
 .pytest_cache/
 
+#Ignore coverage report
+.coverage/
+
 # Ignore images subfolder
 images/
