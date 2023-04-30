@@ -4,9 +4,11 @@ from keras.optimizers import Adam
 from keras.applications.efficientnet import EfficientNetB3
 from keras.losses import categorical_crossentropy
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
+import matplotlib.pyplot as plt
+import pickle
 from parameters import num_classes, BATCH, EPOCHS
 from dataset import train_set, val_set
-import pickle
+
 
 
 def build_model(num_classes):
@@ -79,7 +81,7 @@ def train_model(model, train_set, val_set, BATCH, EPOCHS):
     checkpoint = ModelCheckpoint(model_path, monitor='val_accuracy', save_best_only=True, mode='max', verbose=1)
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=2, min_lr=1e-7, verbose=1)
 
-    history = model.fit(train_set, epochs=EPOCHS, steps_per_epoch=len(train_set), validation_data=val_set,
+    history = model.fit(train_set, batch_size=BATCH, epochs=EPOCHS, steps_per_epoch=len(train_set), validation_data=val_set,
                         validation_steps=len(val_set), callbacks=[checkpoint, reduce_lr])
 
     model.callbacks = [checkpoint, reduce_lr]
@@ -118,9 +120,31 @@ def load_model(filepath):
     return model
 
 
+def plot_history(history):
+    fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+
+    # Plot training & validation accuracy values
+    ax[0].plot(history.history['accuracy'])
+    ax[0].plot(history.history['val_accuracy'])
+    ax[0].set_title('Model accuracy')
+    ax[0].set_ylabel('Accuracy')
+    ax[0].set_xlabel('Epoch')
+    ax[0].legend(['Train', 'Validation'], loc='best')
+
+    # Plot training & validation loss values
+    ax[1].plot(history.history['loss'])
+    ax[1].plot(history.history['val_loss'])
+    ax[1].set_title('Model loss')
+    ax[1].set_ylabel('Loss')
+    ax[1].set_xlabel('Epoch')
+    ax[1].legend(['Train', 'Validation'], loc='best')
+    plt.savefig('accuracy_loss.png')
+    plt.show()
+
 efficientNet = build_model(num_classes)
 model_history, trained_model = train_model(efficientNet, train_set, val_set, BATCH, EPOCHS)
 saved_model = save_model(efficientNet, 'model.pkl')
+plot_history(model_history)
 
 
 
