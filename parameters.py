@@ -1,7 +1,9 @@
 img_path = 'images'
 IMG_SIZE = 250
-BATCH = 16
+BATCH = 8
+EPOCHS = 5
 classes = ['BLA', 'EBO', 'MMZ', 'NGS']
+num_classes = 4
 
 augmentation_params = {
     'rotation_range': 0,
@@ -24,3 +26,4 @@ train_params = {
     'shuffle': True,
     'seed': 42
 }
+
