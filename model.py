@@ -4,10 +4,9 @@ from keras.optimizers import Adam
 from keras.applications.efficientnet import EfficientNetB3
 from keras.losses import categorical_crossentropy
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
-from parameters import BATCH, EPOCHS, num_classes
+from parameters import num_classes, BATCH, EPOCHS
 from dataset import train_set, val_set
 import pickle
-
 
 
 def build_model(num_classes):
@@ -43,9 +42,9 @@ def build_model(num_classes):
 
 def train_model(model, train_set, val_set, BATCH, EPOCHS):
     '''
-    Checks if a trained model already exists in the same folder and if so it loads the saved weight;
+    Checks if a trained model already exists in the folder and if so it loads the saved weight;
     defines the keras callbacks through ModelCheckpoint monitoring the accuracy, and
-        through ReduceLROnPlateau monitoring the loss; 
+    through ReduceLROnPlateau monitoring the loss; 
     trains the model on the training set storing the keras fit in the variable history;
     evaluates it on the validation set;
     adds the callbacks attribute to the model object.
