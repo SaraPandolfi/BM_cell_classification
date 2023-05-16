@@ -6,11 +6,8 @@ from parameters import img_path, test_img_path, train_params
 def dataset_generator(img_path, test_img_path, train_params):
     '''
     Takes the path to a directory and generates batches of data
-    Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) 
-    where x is the input image and y is the ground-truth.
-    The data generation and its split are performed using augmentation_params and train_params:
-    augmentation_params give information regarding the possible flipping of the images and the test/train set split ration
-    train_params give information regarding the image dimensions, color mode, batch size, classes, shuffle and seed
+    Create a tf.data.Dataset yielding tuples of (x, y) with shape (batch_size, height, width, channels) where x is the input image and y is the ground-truth.
+    The data generation and its split are performed using train_params, they give information regarding the image dimensions, color mode, batch size, classes, shuffle and seed
     Parameters
     ----------
     img_path : str
@@ -24,7 +21,7 @@ def dataset_generator(img_path, test_img_path, train_params):
         seed for randomness control.
     Returns
     -------
-    Tf DirectoryIterator yielding tuples of (x, y) where:
+    A tf.data.Dataset object yielding tuples of (x, y) where:
     x is a numpy array containing a batch of images with shape (batch_size, height, width, channels) 
     y is a numpy array of corresponding labels
 
