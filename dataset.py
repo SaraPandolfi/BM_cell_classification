@@ -1,9 +1,9 @@
 import tensorflow as tf
-from keras.preprocessing.image import ImageDataGenerator
-from parameters import img_path, augmentation_params, train_params
+from keras.utils import image_dataset_from_directory
+from parameters import img_path, test_img_path, train_params
 
 
-def dataset_generator(img_path, augmentation_params, train_params):
+def dataset_generator(img_path, test_img_path, train_params):
     '''
     Takes the path to a directory and generates batches of data
     Create DataGenerator yielding tuples of (x, y) with shape (batch_size, height, width, channels) 
@@ -14,13 +14,13 @@ def dataset_generator(img_path, augmentation_params, train_params):
     Parameters
     ----------
     img_path : str
-        path for the images directory
-    augmentation_params : dict
-        dict of keras ImageDataGenerator args for the generation of custom images;
-        traning and validation datasets split ratio
+        path for the training and validation images directory
+    test_img_path : str
+        path for the test images directory
     train_params : dict
-        size of the images;
+        labels and images color mode;
         size of the batches of data;
+        size of the images;
         seed for randomness control.
     Returns
     -------
@@ -30,17 +30,21 @@ def dataset_generator(img_path, augmentation_params, train_params):
 
     '''
 
-    img_data_gen = ImageDataGenerator(**augmentation_params, rescale=1./255)
-
-    train_img_generator = img_data_gen.flow_from_directory(img_path,
-                                                           **train_params, 
-                                                           subset='training')
+    train_img_generator = image_dataset_from_directory(img_path,
+                                                       shuffle= True,
+                                                       validation_split= 0.10,  
+                                                       subset= 'training',
+                                                        **train_params)
     
-    val_img_generator = img_data_gen.flow_from_directory(img_path, 
-                                                         **train_params, 
-                                                         subset='validation')
-    
+    val_img_generator = image_dataset_from_directory(img_path,
+                                                     shuffle= True,
+                                                     validation_split= 0.10,
+                                                     subset='validation',
+                                                     **train_params 
+                                                     )
+    test_dataset = image_dataset_from_directory(test_img_path, shuffle= False, **train_params)
 
-    return train_img_generator, val_img_generator
+    return train_img_generator, val_img_generator, test_dataset
 
-train_set, val_set = dataset_generator(img_path, augmentation_params, train_params)
+
+train_set, val_set, test_set = dataset_generator(img_path, test_img_path, train_params)
