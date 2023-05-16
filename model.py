@@ -7,7 +7,7 @@ from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 import matplotlib.pyplot as plt
 import pickle
 from parameters import num_classes, BATCH, EPOCHS
-from dataset import train_set, val_set
+from dataset import train_set, val_set, test_set
 
 
 
@@ -121,6 +121,16 @@ def load_model(filepath):
 
 
 def plot_history(history):
+
+    '''
+    Plots and saves the training and validation accuracy and loss over epochs.
+
+    Parameters:
+    -----------
+    history : keras.callbacks.history
+        History object returned by the `fit` method of a Keras model.
+
+    '''
     fig, ax = plt.subplots(1, 2, figsize=(12, 4))
 
     # Plot training & validation accuracy values
@@ -141,10 +151,13 @@ def plot_history(history):
     plt.savefig('accuracy_loss.png')
     plt.show()
 
-efficientNet = build_model(num_classes)
-model_history, trained_model = train_model(efficientNet, train_set, val_set, BATCH, EPOCHS)
-saved_model = save_model(efficientNet, 'model.pkl')
-plot_history(model_history)
+
+if __name__ == '__main__':
+    efficientNet = build_model(num_classes)
+    model_history, trained_model = train_model(efficientNet, train_set, val_set, BATCH, EPOCHS)
+    saved_model = save_model(efficientNet, 'model.pkl')
+    plot_history(model_history)
+
 
 
 
