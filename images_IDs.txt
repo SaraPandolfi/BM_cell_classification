@@ -1,18 +1,40 @@
-folder BLA
-    subfolder 0001-1000
-        BLA_00001.jpg - BLA_01000.jpg
+For train_set and val_set:
+    folder BLA
+        subfolder 0001-1000
+            BLA_00001.jpg - BLA_01000.jpg
 
 
-folder EBO
-    subfolder 0001-1000
-        EBO_00001.jpg - EBO_01000.jpg
+    folder EBO
+        subfolder 0001-1000
+            EBO_00001.jpg - EBO_01000.jpg
 
 
-folder MMZ
-    subfolder 0001-1000
-        MMZ_00001.jpg - MMZ_01000.jpg
+    folder MMZ
+        subfolder 0001-1000
+            MMZ_00001.jpg - MMZ_01000.jpg
 
 
-folder NGS
-    subfolder 0001-1000
-        NGS_00001.jpg - NGS_01000.jpg
+    folder NGS
+        subfolder 0001-1000
+            NGS_00001.jpg - NGS_01000.jpg
+
+
+For test_set:
+    folder BLA
+        subfolder 2001-3000
+            BLA_02001.jpg - BLA_02025.jpg
+
+
+    folder EBO
+        subfolder 2001-3000
+            EBO_02001.jpg - EBO_02025.jpg
+
+
+    folder MMZ
+        subfolder 2001-3000
+            MMZ_02001.jpg - MMZ_02025.jpg
+
+
+    folder NGS
+        subfolder 2001-3000
+            NGS_02001.jpg - NGS_02025.jpg
