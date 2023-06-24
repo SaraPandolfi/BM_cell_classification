@@ -12,27 +12,23 @@ from dataset import train_set, val_set, test_set
 
 
 def build_model(num_classes):
-    '''
-    Creates an EfficientNetB3 keras model with the specified number of classes to classify.
-    Parameter
-    ---------
-    num_classes: int
-        number of classes to classify.
+    """
+    Creates an EfficientNetB3 keras model with the specified number of
+    classes to classify.
     
-    Returns
-    ---------
-    EfficientNetB3 keras model
-
-    '''
+    Parameters:
+        num_classes (int): Number of classes to classify.
     
-    model = EfficientNetB3(
-        include_top=True,
-        weights=None,
-        input_tensor=None,
-        input_shape=None,
-        pooling=None,
-        classes= num_classes,
-        classifier_activation='softmax')
+    Returns:
+        EfficientNetB3 keras model.
+    """    
+    model = EfficientNetB3(include_top=True,
+                           weights=None,
+                           input_tensor=None,
+                           input_shape=None,
+                           pooling=None,
+                           classes= num_classes,
+                           classifier_activation='softmax')
     
     model.compile(optimizer=Adam(learning_rate=0.001),
                   loss= categorical_crossentropy,
@@ -41,48 +37,51 @@ def build_model(num_classes):
     return model
 
 
-
 def train_model(model, train_set, val_set, BATCH, EPOCHS):
-    '''
-    Checks if a trained model already exists in the folder and if so it loads the saved weight;
-    defines the keras callbacks through ModelCheckpoint monitoring the accuracy, and
-    through ReduceLROnPlateau monitoring the loss; 
-    trains the model on the training set storing the keras fit in the variable history;
-    evaluates it on the validation set;
-    adds the callbacks attribute to the model object.
+    """
+    Checks if a trained model already exists in the folder and if so,
+    it loads the saved weights.
+    Defines the keras callbacks by ModelCheckpoint monitoring the accuracy,
+    and by ReduceLROnPlateau monitoring the loss.
+    Trains the model on the training set storing the keras fit
+    in the variable history.
+    Evaluates it on the validation set.
+    Adds the callbacks attribute to the model object.
     
-    Parameters
-    ----------
-    model: keras.Model
-        model to train
-    train_set: tf.data.Dataset
-        training dataset
-    val_set: tf.data.Dataset
-        validation dataset
-    BATCH: int
-        batch size
-    EPOCHS: int
-        number of epochs
+    Parameters:
+        model (keras.Model): Model to train.
+        train_set (tf.data.Dataset): Training dataset.
+        val_set (tf.data.Dataset): Validation dataset.
+        BATCH (int): Batch size.
+        EPOCHS (int): Number of epochs.
     
-    Returns
-    --------
-    Tuple containing the training history and the trained model
-    
-    '''
-
-
-    model_path = 'best_efficientnet.h5'
-    
+    Returns:
+        Tuple containing the training history and the trained model.
+    """
+    model_path = 'best_efficientnet.h5'    
     if os.path.exists(model_path):
         print('Loading pre-trained model from file...')
         model.load_weights(model_path)
 
+    checkpoint = ModelCheckpoint(model_path,
+                                 monitor='val_accuracy',
+                                 save_best_only=True, 
+                                 mode='max', 
+                                 verbose=1)
+    
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', 
+                                  factor=0.2, 
+                                  patience=2, 
+                                  min_lr=1e-7, 
+                                  verbose=1)
 
-    checkpoint = ModelCheckpoint(model_path, monitor='val_accuracy', save_best_only=True, mode='max', verbose=1)
-    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=2, min_lr=1e-7, verbose=1)
-
-    history = model.fit(train_set, batch_size=BATCH, epochs=EPOCHS, steps_per_epoch=len(train_set), validation_data=val_set,
-                        validation_steps=len(val_set), callbacks=[checkpoint, reduce_lr])
+    history = model.fit(train_set, 
+                        batch_size=BATCH, 
+                        epochs=EPOCHS, 
+                        steps_per_epoch=len(train_set), 
+                        validation_data=val_set,
+                        validation_steps=len(val_set), 
+                        callbacks=[checkpoint, reduce_lr])
 
     model.callbacks = [checkpoint, reduce_lr]
 
@@ -90,47 +89,40 @@ def train_model(model, train_set, val_set, BATCH, EPOCHS):
 
 
 def save_model(model, filepath):
-    '''
+    """
     Saves the specified model to the specified file path using pickle.
-    Parameters
-    ---------
-    model: Any
-        object to save
-    filepath: str
-        file path to save the object to
-    '''
+    
+    Parameters:
+        model (Any): Object to save.
+        filepath (str): File path to save the object to.
+    """
     with open(filepath, 'wb') as file:
         pickle.dump(model, file)
 
 
 def load_model(filepath):
-    '''
+    """
     Loads an object from the specified file path using pickle.
-    Parameter
-    ---------
-    filepath: str
-        file path to load the object from
     
-    Returns
-    -------
-        Any: loaded object
-    '''
+    Parameters:
+        filepath (str): File path to load the object from.
+    
+    Returns:
+        Any: Loaded object.
+    """
     with open(filepath, 'rb') as file:
         model = pickle.load(file)
     return model
 
 
 def plot_history(history):
-
-    '''
+    """
     Plots and saves the training and validation accuracy and loss over epochs.
-
+    
     Parameters:
-    -----------
-    history : keras.callbacks.history
-        History object returned by the `fit` method of a Keras model.
-
-    '''
+        history (keras.callbacks.History): History object returned by
+        the `fit` method of a Keras model.
+    """
     fig, ax = plt.subplots(1, 2, figsize=(12, 4))
 
     # Plot training & validation accuracy values
@@ -154,7 +146,11 @@ def plot_history(history):
 
 if __name__ == '__main__':
     efficientNet = build_model(num_classes)
-    model_history, trained_model = train_model(efficientNet, train_set, val_set, BATCH, EPOCHS)
+    model_history, trained_model = train_model(efficientNet,
+                                               train_set, 
+                                               val_set, 
+                                               BATCH, 
+                                               EPOCHS)
     saved_model = save_model(efficientNet, 'model.pkl')
     plot_history(model_history)
 
