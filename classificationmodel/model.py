@@ -6,8 +6,8 @@ from keras.losses import categorical_crossentropy
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 import matplotlib.pyplot as plt
 import pickle
-from parameters import num_classes, BATCH, EPOCHS
-from classificationmodel.dataset import train_set, val_set
+from classificationmodel.parameters import num_classes, BATCH, EPOCHS
+from classificationmodel.dataset import train_set, val_set, test_set
 
 
 
@@ -102,13 +102,13 @@ def save_model(model, filepath):
 
 def load_model(filepath):
     """
-    Loads and read a binary file storing the model from the specified file path using pickle.
+    Loads an object from the specified file path using pickle.
     
     Parameters:
-        filepath (str): File path to load the model from.
+        filepath (str): File path to load the object from.
     
     Returns:
-        Any: Loaded model.
+        Any: Loaded object.
     """
     with open(filepath, 'rb') as file:
         model = pickle.load(file)

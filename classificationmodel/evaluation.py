@@ -1,14 +1,12 @@
+from classificationmodel.model import load_model
+from classificationmodel.dataset import test_set
+from classificationmodel.parameters import classes
 import numpy as np
 from sklearn.metrics import classification_report
-from parameters import classes
-from classificationmodel.dataset import test_set
-from classificationmodel.model import load_model
-
 
 def evaluate_model(model, test_dataset, classes):
     """
-    Evaluates the model on the test set, gets the predictions, 
-    print the classification report and returns metrics.
+    Evaluates the model on the test set, gets the predictions, and returns metrics.
 
     Parameters:
         model (keras.Model): Trained model.
@@ -16,11 +14,10 @@ def evaluate_model(model, test_dataset, classes):
         classes (list): List of class names.
 
     Returns:
-        Tuple containing the loss and accuracy.
+        Tuple containing the loss, accuracy, and classification report.
     """    
     loss, accuracy = model.evaluate(test_dataset)
 
-    #Iterate over the test dataset to store true and predicted labels to get the classification report
     y_true = []
     y_pred = []
     for x, y in test_dataset:
