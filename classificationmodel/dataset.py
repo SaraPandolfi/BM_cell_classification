@@ -29,19 +29,19 @@ def dataset_generator(img_path, test_img_path, train_params):
         - y is a numpy array of corresponding labels.
     """
     train_img_generator = image_dataset_from_directory(img_path,    
-                                                       shuffle= True,
-                                                       validation_split= 0.10,  
+                                                       shuffle=True,
+                                                       validation_split=0.10,  
                                                        subset= 'training',
                                                        **train_params)
     
     val_img_generator = image_dataset_from_directory(img_path,
-                                                     shuffle= True,
-                                                     validation_split= 0.10,
+                                                     shuffle=True,
+                                                     validation_split=0.10,
                                                      subset='validation',
                                                      **train_params)
     
     test_dataset = image_dataset_from_directory(test_img_path,
-                                                shuffle= False,
+                                                shuffle=False,
                                                 **train_params)
 
     return train_img_generator, val_img_generator, test_dataset

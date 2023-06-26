@@ -14,10 +14,11 @@ def evaluate_model(model, test_dataset, classes):
         classes (list): List of class names.
 
     Returns:
-        Tuple containing the loss, accuracy, and classification report.
+        Tuple containing the loss and accuracy.
     """    
     loss, accuracy = model.evaluate(test_dataset)
-
+    
+    #Store the true and predicted labels to calculate the classification report
     y_true = []
     y_pred = []
     for x, y in test_dataset:

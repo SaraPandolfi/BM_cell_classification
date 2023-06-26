@@ -90,7 +90,7 @@ def train_model(model, train_set, val_set, BATCH, EPOCHS):
 
 def save_model(model, filepath):
     """
-    Saves the specified model to the specified file path using pickle.
+    Saves the specified model to the specified binary file path using pickle.
     
     Parameters:
         model (Any): Object to save.
@@ -102,7 +102,7 @@ def save_model(model, filepath):
 
 def load_model(filepath):
     """
-    Loads an object from the specified file path using pickle.
+    Loads a binary object from the specified file path using pickle.
     
     Parameters:
         filepath (str): File path to load the object from.
