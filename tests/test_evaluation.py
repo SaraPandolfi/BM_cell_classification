@@ -1,24 +1,43 @@
+import os
+import sys
 import pytest
 import numpy as np
-from model import load_model
-from dataset import test_set
-from parameters import classes
-from evaluation import evaluate_model
+
+# Get the current file's absolute path and move backward to 
+# add the directory to the Python module search path
+current_file = os.path.abspath(__file__)
+parent_dir = os.path.dirname(current_file)
+grandparent_dir = os.path.dirname(parent_dir)
+os.chdir(grandparent_dir)
+current_dir = os.getcwd()
+sys.path.insert(0, current_dir)
+
+from classificationmodel.model import load_model
+from classificationmodel.dataset import dataset_generator
+from classificationmodel.parameters import (img_path,
+                                            test_img_path, 
+                                            train_params, 
+                                            classes)
+from classificationmodel.evaluation import evaluate_model
+
+_, _, test_set = dataset_generator(img_path,
+                                   test_img_path,
+                                   train_params)
 
 def test_evaluate_model():
-    '''
+    """
     This test load the module and the function evaluate_module
-    and verifies that the  loss and accuracy are within a certain tolerance close to the actual values.
-    '''
-
+    and verifies that the loss and accuracy are within a certain tolerance
+    close to the actual values.
+    """
     model = load_model('model.pkl')
-
     test_loss, test_accuracy = evaluate_model(model, test_set, classes)
-
     expected_loss = 1.10  
     expected_accuracy = 0.8  
     tolerance = 1e-1 
-    assert np.abs(test_loss - expected_loss) < tolerance, f"Test Loss does not match expected value. Expected: {expected_loss}, Actual: {test_loss}"
-    assert np.abs(test_accuracy - expected_accuracy) < tolerance, f"Test Accuracy does not match expected value. Expected: {expected_accuracy}, Actual: {test_accuracy}"
-
-
+    assert (np.abs(test_loss - expected_loss) < tolerance,
+            f"Test Loss does not match expected value. "
+            f"Expected: {expected_loss}, Actual: {test_loss}")
+    assert (np.abs(test_accuracy - expected_accuracy) < tolerance,
+            f"Test Accuracy does not match expected value. "
+            f"Expected: {expected_accuracy}, Actual: {test_accuracy}")
