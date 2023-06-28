@@ -1,7 +1,5 @@
 import tensorflow as tf
 from keras.utils import image_dataset_from_directory
-from classificationmodel.parameters import img_path, test_img_path, train_params
-
 
 def dataset_generator(img_path, test_img_path, train_params):
     """
@@ -45,8 +43,3 @@ def dataset_generator(img_path, test_img_path, train_params):
                                                 **train_params)
 
     return train_img_generator, val_img_generator, test_dataset
-
-
-train_set, val_set, test_set = dataset_generator(img_path,
-                                                 test_img_path,
-                                                 train_params)

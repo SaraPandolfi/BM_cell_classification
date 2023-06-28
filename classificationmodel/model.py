@@ -6,10 +6,6 @@ from keras.losses import categorical_crossentropy
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 import matplotlib.pyplot as plt
 import pickle
-from classificationmodel.parameters import num_classes, BATCH, EPOCHS
-from classificationmodel.dataset import train_set, val_set, test_set
-
-
 
 def build_model(num_classes):
     """
@@ -47,6 +43,7 @@ def train_model(model, train_set, val_set, BATCH, EPOCHS):
     in the variable history.
     Evaluates it on the validation set.
     Adds the callbacks attribute to the model object.
+    The trained model is saved to the file specified by `model_path`.
     
     Parameters:
         model (keras.Model): Model to train.
@@ -142,22 +139,3 @@ def plot_history(history):
     ax[1].legend(['Train', 'Validation'], loc='best')
     plt.savefig('accuracy_loss.png')
     plt.show()
-
-
-if __name__ == '__main__':
-    efficientNet = build_model(num_classes)
-    model_history, trained_model = train_model(efficientNet,
-                                               train_set, 
-                                               val_set, 
-                                               BATCH, 
-                                               EPOCHS)
-    saved_model = save_model(efficientNet, 'model.pkl')
-    plot_history(model_history)
-
-
-
-
-
-
-
-

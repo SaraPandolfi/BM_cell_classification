@@ -2,7 +2,7 @@ img_path = 'images'
 test_img_path = 'test_images'
 IMG_SIZE = 300
 BATCH = 8
-EPOCHS = 5
+EPOCHS = 10
 classes = ['BLA', 'EBO', 'MMZ', 'NGS']
 num_classes = 4
 
@@ -13,4 +13,3 @@ train_params = {
 'image_size' : (IMG_SIZE, IMG_SIZE),
 'seed' : 42    
 }
-
