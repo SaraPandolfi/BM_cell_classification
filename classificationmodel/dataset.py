@@ -53,6 +53,7 @@ def image_visualization(dataset, classes):
 
     Args:
         dataset (tf.data.Dataset): The dataset containing images.
+        classes (list): List of class labels.
 
     Returns:
         None
