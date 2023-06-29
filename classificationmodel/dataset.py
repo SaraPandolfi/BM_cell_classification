@@ -1,5 +1,8 @@
 import tensorflow as tf
+import numpy as np
 from keras.utils import image_dataset_from_directory
+import matplotlib.pyplot as plt
+
 
 def dataset_generator(img_path, test_img_path, train_params):
     """
@@ -43,3 +46,27 @@ def dataset_generator(img_path, test_img_path, train_params):
                                                 **train_params)
 
     return train_img_generator, val_img_generator, test_dataset
+
+def image_visualization(dataset, classes):
+    """
+    Visualizes a sample of images from a dataset.
+
+    Args:
+        dataset (tf.data.Dataset): The dataset containing images.
+
+    Returns:
+        None
+
+    """
+    plt.figure(figsize=(12, 8))
+    # select images only from the first batch
+    for images, labels in dataset.take(1):
+        # convert labels tensor to NumPy array
+        # and then one-hot encoded vectors to integer labels
+        labels = labels.numpy()
+        labels = np.argmax(labels, axis=1)
+        for i in range(8):
+            ax = plt.subplot(2, 4, i + 1)
+            plt.imshow(images[i].numpy().astype("uint8"))
+            plt.title(classes[labels[i]])
+            plt.axis("off")
