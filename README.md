@@ -30,14 +30,14 @@ I suggest to try the classification task on Google Colab since the execution tim
 - scikit-learn>=1.0.1
 - matplotlib>=3.4.3
 
-## Installation
-
 To install the program clone the repository BM_cell_classification and use pip:
 
     git clone https://github.com/SaraPandolfi/BM_cell_classification
     cd BM_cell_classification
     pip install -r requirements.txt
 
+## Installation
+The program does not require any installation. You can use it by running your scripts and notebooks inside the BM_cell_classification folder directly.
 
 ## Images Download
 
