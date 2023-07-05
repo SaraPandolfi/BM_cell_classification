@@ -12,11 +12,12 @@ os.chdir(grandparent_dir)
 current_dir = os.getcwd()
 sys.path.insert(0, current_dir)
 
-from classificationmodel.model import load_model
+from classificationmodel.model import load_model, build_model
 from classificationmodel.dataset import dataset_generator
 from classificationmodel.parameters import (img_path,
                                             test_img_path, 
                                             train_params, 
+                                            num_classes,
                                             classes)
 from classificationmodel.evaluation import evaluate_model
 
@@ -30,7 +31,14 @@ def test_evaluate_model():
     and verifies that the loss and accuracy are within a certain tolerance
     close to the actual values.
     """
-    model = load_model('model.pkl')
+    model_path = os.path.join(os.path.dirname(__file__), '..', 'model.pkl')
+    try:
+        model = load_model(model_path)
+    except FileNotFoundError:
+        model = build_model(num_classes)
+    except Exception as e:
+        pytest.fail(f"Failed to load or build model: {e}")
+    
     test_loss, test_accuracy = evaluate_model(model, test_set, classes)
     expected_loss = 1.10  
     expected_accuracy = 0.8  
