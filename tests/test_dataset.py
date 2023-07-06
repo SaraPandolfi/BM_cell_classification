@@ -13,7 +13,7 @@ current_dir = os.getcwd()
 sys.path.insert(0, current_dir)
 
 from classificationmodel.dataset import dataset_generator
-from classificationmodel.parameters import train_params, test_img_path, img_path, num_classes, classes
+from classificationmodel.parameters import train_params, test_img_path, img_path, num_classes
 
 
 @pytest.fixture(scope="module")
@@ -57,7 +57,8 @@ def test_dataset_generator_image_shape_dtype(data_generators):
     x_train, y_train = next(iter(train_set))
     assert x_train.shape == tf.TensorShape([train_params['batch_size'],
                                             train_params['image_size'][0], 
-                                            train_params['image_size'][1], 3])
+                                            train_params['image_size'][1],
+                                            3])
     assert x_train.dtype == 'float32'
     assert y_train.shape == (train_params['batch_size'], num_classes)
     assert y_train.dtype == 'float32'
