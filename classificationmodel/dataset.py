@@ -3,7 +3,6 @@ import numpy as np
 from keras.utils import image_dataset_from_directory
 import matplotlib.pyplot as plt
 
-
 def dataset_generator(img_path, test_img_path, train_params):
     """
     Takes the path to a directory and generates batches of data.

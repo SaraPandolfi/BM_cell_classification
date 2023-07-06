@@ -24,6 +24,5 @@ def evaluate_model(model, test_dataset, classes):
         y_pred.extend(np.argmax(y_pred_probs, axis=1))
     
     print(classification_report(y_true, y_pred, target_names=classes))
-
     return loss, accuracy
 

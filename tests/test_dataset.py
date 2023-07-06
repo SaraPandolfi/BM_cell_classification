@@ -13,8 +13,10 @@ current_dir = os.getcwd()
 sys.path.insert(0, current_dir)
 
 from classificationmodel.dataset import dataset_generator
-from classificationmodel.parameters import train_params, test_img_path, img_path, num_classes
-
+from classificationmodel.parameters import (train_params, 
+                                            test_img_path, 
+                                            img_path, 
+                                            num_classes)
 
 @pytest.fixture(scope="module")
 def data_generators():
@@ -24,7 +26,9 @@ def data_generators():
     defined in parameters.py.
     It returns the generators for use in the tests.
     """
-    train_set, val_set, test_set = dataset_generator(img_path, test_img_path, train_params)
+    train_set, val_set, test_set = dataset_generator(img_path, 
+                                                     test_img_path, 
+                                                     train_params)
     return train_set, val_set, test_set
 
 def test_dataset_generator_returns_tuple(data_generators):

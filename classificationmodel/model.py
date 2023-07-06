@@ -32,7 +32,6 @@ def build_model(num_classes):
     
     return model
 
-
 def train_model(model, train_set, val_set, BATCH, EPOCHS):
     """
     Checks if a trained model already exists in the folder and if so,
@@ -84,7 +83,6 @@ def train_model(model, train_set, val_set, BATCH, EPOCHS):
 
     return history, model
 
-
 def save_model(model, filepath):
     """
     Saves the specified model to the specified binary file path using pickle.
@@ -95,7 +93,6 @@ def save_model(model, filepath):
     """
     with open(filepath, 'wb') as file:
         pickle.dump(model, file)
-
 
 def load_model(filepath):
     """
@@ -110,7 +107,6 @@ def load_model(filepath):
     with open(filepath, 'rb') as file:
         model = pickle.load(file)
     return model
-
 
 def plot_history(history):
     """

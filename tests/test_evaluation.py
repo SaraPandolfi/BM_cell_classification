@@ -27,7 +27,7 @@ _, _, test_set = dataset_generator(img_path,
 
 def test_evaluate_model():
     """
-    This test load the module and the function evaluate_module
+    This test loads or builds the model and the function evaluate_model
     and verifies that the loss and accuracy are within a certain tolerance
     close to the actual values.
     """
@@ -39,7 +39,9 @@ def test_evaluate_model():
     except Exception as e:
         pytest.fail(f"Failed to load or build model: {e}")
     
-    test_loss, test_accuracy = evaluate_model(model, test_set, classes)
+    test_loss, test_accuracy = evaluate_model(model, 
+                                              test_set, 
+                                              classes)
     expected_loss = 1.10  
     expected_accuracy = 0.8  
     tolerance = 1e-1 
