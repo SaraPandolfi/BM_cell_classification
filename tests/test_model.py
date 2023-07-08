@@ -6,12 +6,33 @@ from keras.optimizers import Adam
 from keras.losses import categorical_crossentropy
 from keras.applications.efficientnet import EfficientNetB3
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
+import configparser
+
+#Get the parameters
+config = configparser.ConfigParser()
+config.read('test_parameters.ini')
+
+img_size = config.getint('setting', 'img_size')
+batch = config.getint('setting', 'batch')
+epochs = config.getint('setting', 'epochs')
+classes = config.get('setting', 'classes').split(',')
+num_classes = config.getint('setting', 'num_classes')
+train_params = {'label_mode': config.get('setting', 'label_mode'),
+                'color_mode': config.get('setting', 'color_mode'),
+                'batch_size': config.getint('setting', 'batch'),
+                'image_size': eval(config.get('setting', 'image_size')),
+                'seed': config.getint('setting', 'seed')}
 
 # Get the current file's absolute path and move backward to 
 # add the directory to the Python module search path
 current_file = os.path.abspath(__file__)
 parent_dir = os.path.dirname(current_file)
 grandparent_dir = os.path.dirname(parent_dir)
+
+img_path = os.path.join(grandparent_dir, config.get('path', 'img_path'))
+test_img_path = os.path.join(grandparent_dir, config.get('path', 'test_img_path'))
+weight_path = os.path.join(grandparent_dir, config.get('path', 'weight_path'))
+
 os.chdir(grandparent_dir)
 current_dir = os.getcwd()
 sys.path.insert(0, current_dir)
@@ -20,14 +41,8 @@ from classificationmodel.dataset import dataset_generator
 from classificationmodel.model import (build_model, 
                                        load_model_weights, 
                                        train_model, 
-                                       load_model)
-from classificationmodel.parameters import (img_path,
-                                            test_img_path, 
-                                            train_params, 
-                                            batch, 
-                                            epochs, 
-                                            num_classes,
-                                            weight_path)
+                                       load_model,
+                                       save_model)
 
 train_set, val_set, _ = dataset_generator(img_path,
                                           test_img_path,
@@ -81,6 +96,31 @@ def test_compile_model(efficientnet):
     assert efficientnet.optimizer.__class__ == Adam
     assert efficientnet.loss.__name__ == 'categorical_crossentropy'
 
+import filecmp
+
+def test_save_and_load_model(efficientnet):
+    """
+    This test verifies the functionality of saving and loading a model.
+    It saves a model using the `save_model()` function, 
+    loads the saved model using the `load_model()` function,
+    and then saves the loaded model again. It compares the contents
+    of the two saved files to ensure they are identical.
+    """
+    original_model_path = 'original_model.json'
+    save_model(efficientnet, original_model_path)
+    
+    # Load the saved model
+    loaded_model = load_model(original_model_path)
+    
+    # Save the loaded model
+    loaded_model_path = 'loaded_model.json'
+    save_model(loaded_model, loaded_model_path)
+    
+    # Compare the contents of the two saved files
+    assert filecmp.cmp(original_model_path, loaded_model_path), (
+        "Saved models are not identical")
+
+
 def test_train_model_returns_history(efficientnet):
     """
     This test checks if the train_model function returns a history object
@@ -125,9 +165,10 @@ def test_model_callbacks_instance():
                                    batch, 
                                    epochs,
                                    weight_path)
-    expected_callbacks = [ReduceLROnPlateau, ModelCheckpoint]    
+    expected_callbacks = (ReduceLROnPlateau, ModelCheckpoint)
     actual_callbacks = trained_model.callbacks
+    assert isinstance(actual_callbacks[0], expected_callbacks[0]), (
+        "First callback is not an instance of ReduceLROnPlateau")
+    assert isinstance(actual_callbacks[1], expected_callbacks[1]), (
+        "Second callback is not an instance of ModelCheckpoint")
     
-    assert all(isinstance(callback, tuple(expected_callbacks))
-               for callback in actual_callbacks), (
-        "Model callbacks are not instances of ReduceLROnPlateau and ModelCheckpoint classes")

@@ -5,7 +5,7 @@ from keras.applications.efficientnet import EfficientNetB3
 from keras.losses import categorical_crossentropy
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 import matplotlib.pyplot as plt
-import pickle
+import json
 
 def build_model(num_classes):
     """
@@ -99,29 +99,31 @@ def train_model(model, train_set, val_set, batch, epochs, weight_path):
 
     return history, model
 
-def save_model(model, filepath):
+def save_model(model, model_path):
     """
-    Saves the specified model to the specified binary file path using pickle.
+    Saves the specified model to the specified JSON file path.
     
     Parameters:
-        model (Any): Object to save.
-        filepath (str): File path to save the object to.
+        model (keras.Model): Model to save.
+        model_path (str): File path to save the model to.
     """
-    with open(filepath, 'wb') as file:
-        pickle.dump(model, file)
+    model_json = model.to_json()
+    with open(model_path, 'w') as file:
+        file.write(model_json)
 
-def load_model(filepath):
+def load_model(model_path):
     """
-    Loads a binary object from the specified file path using pickle.
+    Loads a model from the specified JSON file path.
     
     Parameters:
-        filepath (str): File path to load the object from.
+        model_path (str): File path to load the model from.
     
     Returns:
-        Any: Loaded object.
+        keras.Model: Loaded model.
     """
-    with open(filepath, 'rb') as file:
-        model = pickle.load(file)
+    with open(model_path, 'r') as file:
+        model_json = file.read()
+    model = tf.keras.models.model_from_json(model_json)
     return model
 
 def plot_history(history):
