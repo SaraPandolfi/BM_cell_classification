@@ -10,21 +10,24 @@ Parameters:
     classes (list): List of class labels.
     num_classes (int): Number of classes.
     train_params (dict): Dictionary of parameters for training the model.
+    weight_path (str): Path to the .h5 file with pre-trained weights
 
 """
 
 img_path = 'images'
 test_img_path = 'test_images'
-IMG_SIZE = 300
-BATCH = 8
-EPOCHS = 10
+img_size = 300
+batch = 8
+epochs = 10
 classes = ['BLA', 'EBO', 'MMZ', 'NGS']
 num_classes = 4
 
 train_params = {
 'label_mode': 'categorical',
 'color_mode' : 'rgb',
-'batch_size' : BATCH,
-'image_size' : (IMG_SIZE, IMG_SIZE),
+'batch_size' : batch,
+'image_size' : (img_size, img_size),
 'seed' : 42    
 }
+
+weight_path = 'best_efficientnet.h5'
