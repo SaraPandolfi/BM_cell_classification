@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 import math
 import configparser
+import json
 
 #Get the parameters
 config = configparser.ConfigParser()
@@ -46,9 +47,9 @@ _, _, test_set = dataset_generator(img_path,
 def efficientnet():
     """
     This fixture function loads a pre-trained EfficientNet model
-    from the 'model.pkl' file or builds it if the file is not found.
+    from the 'model.json' file or builds it if the file is not found.
     """
-    model_path = os.path.join(os.path.dirname(__file__), '..', 'model.pkl')
+    model_path = os.path.join(os.path.dirname(__file__), '..', 'model.json')
     try:
         model = load_model(model_path)
     except FileNotFoundError:

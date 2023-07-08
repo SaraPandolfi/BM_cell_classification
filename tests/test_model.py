@@ -7,6 +7,7 @@ from keras.losses import categorical_crossentropy
 from keras.applications.efficientnet import EfficientNetB3
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 import configparser
+import json
 
 #Get the parameters
 config = configparser.ConfigParser()
@@ -52,9 +53,9 @@ train_set, val_set, _ = dataset_generator(img_path,
 def efficientnet():
     """
     This fixture function loads a pre-trained EfficientNet model
-    from the 'model.pkl' file or builds it if the file is not found.
+    from the 'model.json' file or builds it if the file is not found.
     """
-    model_path = os.path.join(os.path.dirname(__file__), '..', 'model.pkl')
+    model_path = os.path.join(os.path.dirname(__file__), '..', 'model.json')
     try:
         model = load_model(model_path)
     except FileNotFoundError:
