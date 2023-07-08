@@ -2,6 +2,8 @@ import os
 import sys
 import pytest
 import numpy as np
+import tensorflow as tf
+import math
 
 # Get the current file's absolute path and move backward to 
 # add the directory to the Python module search path
@@ -18,18 +20,19 @@ from classificationmodel.parameters import (img_path,
                                             test_img_path, 
                                             train_params, 
                                             num_classes,
-                                            classes)
-from classificationmodel.evaluation import evaluate_model
+                                            classes,
+                                            batch)
+from classificationmodel.evaluation import evaluate_model, evaluation_report
 
 _, _, test_set = dataset_generator(img_path,
                                    test_img_path,
                                    train_params)
 
-def test_evaluate_model():
+@pytest.fixture(scope="module")
+def efficientnet():
     """
-    This test loads or builds the model and the function evaluate_model
-    and verifies that the loss and accuracy are within a certain tolerance
-    close to the actual values.
+    This fixture function loads a pre-trained EfficientNet model
+    from the 'model.pkl' file or builds it if the file is not found.
     """
     model_path = os.path.join(os.path.dirname(__file__), '..', 'model.pkl')
     try:
@@ -38,10 +41,15 @@ def test_evaluate_model():
         model = build_model(num_classes)
     except Exception as e:
         pytest.fail(f"Failed to load or build model: {e}")
-    
-    test_loss, test_accuracy = evaluate_model(model, 
-                                              test_set, 
-                                              classes)
+    return model
+
+def test_evaluate_model(efficientnet):
+    """
+    This verifies that the loss and accuracy are within a certain tolerance
+    close to the actual values.
+    """  
+    test_loss, test_accuracy = evaluate_model(efficientnet, 
+                                              test_set)
     expected_loss = 1.10  
     expected_accuracy = 0.8  
     tolerance = 1e-1 
@@ -51,3 +59,40 @@ def test_evaluate_model():
     assert (np.abs(test_accuracy - expected_accuracy) < tolerance,
             f"Test Accuracy does not match expected value. "
             f"Expected: {expected_accuracy}, Actual: {test_accuracy}")
+
+def test_evaluation_report_lists(efficientnet):
+    y_true = []
+    y_pred = []
+    for x, y in test_set:
+        assert (np.array_equal(x[0], y[0]),
+                f"Mismatch between x and y in the test_dataset")
+        
+        y_pred_probs = efficientnet.predict(x)
+        # Check if the shape of y and y_pred_prob are the same
+        #  so they can be treated equally
+        assert y.shape == y_pred_probs.shape
+        assert y.shape[1] == num_classes, "Incorrect shape of 'y' array"
+        assert y_pred_probs.shape[1] == num_classes, "Incorrect shape of predicted probabilities"  
+        y_true.extend(np.argmax(y.numpy(), axis=1))
+        y_pred.extend(np.argmax(y_pred_probs, axis=1))
+
+   # Compare the lengths of y_true and y_pred
+    assert len(y_true) == len(y_pred)
+
+    cardinality = tf.data.experimental.cardinality(test_set).numpy()
+    dataset_batches = int(cardinality)
+    expected_batches = math.ceil(len(y_true) / batch)
+    assert dataset_batches == expected_batches
+
+def test_evaluation_report_classes(efficientnet, capsys):
+    
+    # Capture the printed output
+    with capsys.disabled():
+        evaluation_report(test_set, efficientnet, classes)
+
+    # Check if the class names appear in the printed output
+    captured = capsys.readouterr()
+    printed_output = captured.out
+    for class_name in classes:
+        assert (class_name in printed_output, 
+                f"Class {class_name} not found in the classification report")

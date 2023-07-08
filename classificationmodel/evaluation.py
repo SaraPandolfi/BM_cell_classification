@@ -1,9 +1,10 @@
 import numpy as np
 from sklearn.metrics import classification_report
 
-def evaluate_model(model, test_dataset, classes):
+def evaluate_model(model, test_dataset):
     """
-    Evaluates the model on the test set, gets the predictions, and returns metrics.
+    Evaluates the model on the test set, gets the predictions
+    and returns metrics.
 
     Parameters:
         model (keras.Model): Trained model.
@@ -14,8 +15,21 @@ def evaluate_model(model, test_dataset, classes):
         Tuple containing the loss and accuracy.
     """    
     loss, accuracy = model.evaluate(test_dataset)
+    return loss, accuracy
+
+def evaluation_report(test_dataset, model, classes):
+    """
+    Stores the true and predicted labels to calculate
+    and print the classification report of sk.learn.
+
+    Parameters:
+        model (keras.Model): Trained model.
+        test_dataset (tf.data.Dataset): Test dataset.
+        classes (list): List of class names.
     
-    #Store the true and predicted labels to calculate the classification report
+    Returns: 
+        None.
+    """
     y_true = []
     y_pred = []
     for x, y in test_dataset:
@@ -24,5 +38,3 @@ def evaluate_model(model, test_dataset, classes):
         y_pred.extend(np.argmax(y_pred_probs, axis=1))
     
     print(classification_report(y_true, y_pred, target_names=classes))
-    return loss, accuracy
-
