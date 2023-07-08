@@ -2,21 +2,39 @@ import os
 import sys
 import tensorflow as tf
 import pytest
+import configparser
+
+#Get the parameters
+config = configparser.ConfigParser()
+config.read('test_parameters.ini')
+
+img_size = config.getint('setting', 'img_size')
+batch = config.getint('setting', 'batch')
+epochs = config.getint('setting', 'epochs')
+classes = config.get('setting', 'classes').split(',')
+num_classes = config.getint('setting', 'num_classes')
+train_params = {
+    'label_mode': config.get('setting', 'label_mode'),
+    'color_mode': config.get('setting', 'color_mode'),
+    'batch_size': config.getint('setting', 'batch'),
+    'image_size': eval(config.get('setting', 'image_size')),
+    'seed': config.getint('setting', 'seed')}
 
 # Get the current file's absolute path and move backward to 
-# add the directory to the Python module search path
+# get the folders' paths and add the directory to the Python module search path
 current_file = os.path.abspath(__file__)
 parent_dir = os.path.dirname(current_file)
 grandparent_dir = os.path.dirname(parent_dir)
+
+img_path = os.path.join(grandparent_dir, config.get('path', 'img_path'))
+test_img_path = os.path.join(grandparent_dir, config.get('path', 'test_img_path'))
+weight_path = os.path.join(grandparent_dir, config.get('path', 'weight_path'))
+
 os.chdir(grandparent_dir)
 current_dir = os.getcwd()
 sys.path.insert(0, current_dir)
 
 from classificationmodel.dataset import dataset_generator
-from classificationmodel.parameters import (train_params, 
-                                            test_img_path, 
-                                            img_path, 
-                                            num_classes)
 
 @pytest.fixture(scope="module")
 def data_generators():

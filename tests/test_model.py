@@ -24,7 +24,7 @@ train_params = {'label_mode': config.get('setting', 'label_mode'),
                 'seed': config.getint('setting', 'seed')}
 
 # Get the current file's absolute path and move backward to 
-# add the directory to the Python module search path
+# get the folders' paths and add the directory to the Python module search path
 current_file = os.path.abspath(__file__)
 parent_dir = os.path.dirname(current_file)
 grandparent_dir = os.path.dirname(parent_dir)
