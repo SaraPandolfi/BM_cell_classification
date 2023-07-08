@@ -17,13 +17,17 @@ current_dir = os.getcwd()
 sys.path.insert(0, current_dir)
 
 from classificationmodel.dataset import dataset_generator
-from classificationmodel.model import build_model, train_model, load_model
+from classificationmodel.model import (build_model, 
+                                       load_model_weights, 
+                                       train_model, 
+                                       load_model)
 from classificationmodel.parameters import (img_path,
                                             test_img_path, 
                                             train_params, 
-                                            BATCH, 
-                                            EPOCHS, 
-                                            num_classes)
+                                            batch, 
+                                            epochs, 
+                                            num_classes,
+                                            weight_path)
 
 train_set, val_set, _ = dataset_generator(img_path,
                                           test_img_path,
@@ -52,6 +56,23 @@ def test_build_model(efficientnet):
     assert isinstance(efficientnet, tf.keras.Model)
     assert efficientnet.output_shape == (None, num_classes)
 
+def test_load_model_weights_existing_file(efficientnet):
+    """
+    This test checks the load_model_weights function when the weights file exists.
+    It verifies that the function successfully loads the weights into the given model.
+    """
+    loaded_model = load_model_weights(efficientnet, str(weight_path))
+    assert loaded_model == efficientnet
+
+def test_load_model_weights_nonexistent_file(efficientnet):
+    """
+    This test checks the load_model_weights function when the weights
+    file does not exist by calling the function with a non-existent file.
+    It verifies that the function returns False and does not load any weights.
+    """
+    loaded_model = load_model_weights(efficientnet, 'nonexistent_weights.h5')
+    assert loaded_model == False
+
 def test_compile_model(efficientnet):
     """
     This test checks if the model returned by the build_model function
@@ -68,8 +89,9 @@ def test_train_model_returns_history(efficientnet):
     history, _ = train_model(efficientnet, 
                              train_set, 
                              val_set, 
-                             BATCH, 
-                             EPOCHS)
+                             batch, 
+                             epochs, 
+                             weight_path)
     assert isinstance(history.history, dict)
     assert 'accuracy' in history.history.keys()
     assert 'val_accuracy' in history.history.keys()
@@ -85,8 +107,9 @@ def test_model_callbacks_attribute():
     _, trained_model = train_model(efficientNet,
                                    train_set,
                                    val_set,
-                                   BATCH,
-                                   EPOCHS)
+                                   batch,
+                                   epochs,
+                                   weight_path)
     assert hasattr(trained_model, 'callbacks') == True, (
     "Model does not have 'callbacks' attribute after training")
 
@@ -99,8 +122,12 @@ def test_model_callbacks_instance():
     _, trained_model = train_model(efficientNet, 
                                    train_set, 
                                    val_set, 
-                                   BATCH, 
-                                   EPOCHS)
-    assert all(isinstance(callback, (ReduceLROnPlateau, ModelCheckpoint))
-               for callback in trained_model.callbacks) == True, (
-    "Model callbacks are not instances of ReduceLROnPlateau and ModelCheckpoint classes")
+                                   batch, 
+                                   epochs,
+                                   weight_path)
+    expected_callbacks = [ReduceLROnPlateau, ModelCheckpoint]    
+    actual_callbacks = trained_model.callbacks
+    
+    assert all(isinstance(callback, tuple(expected_callbacks))
+               for callback in actual_callbacks), (
+        "Model callbacks are not instances of ReduceLROnPlateau and ModelCheckpoint classes")

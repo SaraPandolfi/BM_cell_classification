@@ -32,10 +32,30 @@ def build_model(num_classes):
     
     return model
 
-def train_model(model, train_set, val_set, BATCH, EPOCHS):
+def load_model_weights(model, weight_path):
     """
-    Checks if a trained model already exists in the folder and if so,
-    it loads the saved weights.
+    Loads pre-trained model weights from a file.
+    If the weights file exists, it loads the weights into the given model and returns the model.
+    Otherwise, it prints a message indicating that no pre-trained weights were found and returns None.
+
+    Parameters:
+        model (keras.Model): Model to load the weights into.
+        weight_path (str): Path to the pre-traned saved weights.
+
+    Returns:
+        keras.Model or None: Loaded model if the weights were loaded successfully, None otherwise.
+    """
+    if os.path.exists(weight_path):
+        print('Loading pre-trained model from file...')
+        model.load_weights(weight_path)
+        return model
+    else:
+        print('No pre-trained model weights found.')
+        return False
+
+
+def train_model(model, train_set, val_set, batch, epochs, weight_path):
+    """
     Defines the keras callbacks by ModelCheckpoint monitoring the accuracy,
     and by ReduceLROnPlateau monitoring the loss.
     Trains the model on the training set storing the keras fit
@@ -48,18 +68,14 @@ def train_model(model, train_set, val_set, BATCH, EPOCHS):
         model (keras.Model): Model to train.
         train_set (tf.data.Dataset): Training dataset.
         val_set (tf.data.Dataset): Validation dataset.
-        BATCH (int): Batch size.
-        EPOCHS (int): Number of epochs.
+        batch (int): Batch size.
+        epochs (int): Number of epochs.
+        weight_path (str): Path to the .h5 file to store the updated weights.
     
     Returns:
         Tuple containing the training history and the trained model.
-    """
-    model_path = 'best_efficientnet.h5'    
-    if os.path.exists(model_path):
-        print('Loading pre-trained model from file...')
-        model.load_weights(model_path)
-
-    checkpoint = ModelCheckpoint(model_path,
+    """     
+    checkpoint = ModelCheckpoint(weight_path,
                                  monitor='val_accuracy',
                                  save_best_only=True, 
                                  mode='max', 
@@ -72,8 +88,8 @@ def train_model(model, train_set, val_set, BATCH, EPOCHS):
                                   verbose=1)
 
     history = model.fit(train_set, 
-                        batch_size=BATCH, 
-                        epochs=EPOCHS, 
+                        batch_size=batch, 
+                        epochs=epochs, 
                         steps_per_epoch=len(train_set), 
                         validation_data=val_set,
                         validation_steps=len(val_set), 
