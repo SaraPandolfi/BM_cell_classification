@@ -15,6 +15,8 @@ def evaluate_model(model, test_dataset):
         Tuple containing the loss and accuracy.
     """    
     loss, accuracy = model.evaluate(test_dataset)
+    print(f'Test Loss: {loss}')
+    print(f'Test Accuracy: {accuracy}')
     return loss, accuracy
 
 def evaluation_report(test_dataset, model, classes):
