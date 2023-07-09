@@ -53,7 +53,6 @@ def load_model_weights(model, weight_path):
         print('No pre-trained model weights found.')
         return False
 
-
 def train_model(model, train_set, val_set, batch, epochs, weight_path):
     """
     Defines the keras callbacks by ModelCheckpoint monitoring the accuracy,
@@ -113,7 +112,7 @@ def save_model(model, model_path):
 
 def load_model(model_path):
     """
-    Loads a model from the specified JSON file path.
+    Loads a model from the specified JSON file path and compiles it.
     
     Parameters:
         model_path (str): File path to load the model from.
@@ -124,6 +123,9 @@ def load_model(model_path):
     with open(model_path, 'r') as file:
         model_json = file.read()
     model = tf.keras.models.model_from_json(model_json)
+    model.compile(optimizer=Adam(learning_rate=0.001),
+                  loss= categorical_crossentropy,
+                  metrics=['accuracy'])
     return model
 
 def plot_history(history):
