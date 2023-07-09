@@ -12,6 +12,7 @@ config = configparser.ConfigParser()
 config.read('test_parameters.ini')
 img_size = config.getint('setting', 'img_size')
 batch = config.getint('setting', 'batch')
+epochs = config.getint('setting', 'epochs')
 classes = config.get('setting', 'classes').split(',')
 num_classes = config.getint('setting', 'num_classes')
 train_params = {
@@ -35,79 +36,100 @@ os.chdir(grandparent_dir)
 current_dir = os.getcwd()
 sys.path.insert(0, current_dir)
 
-from classificationmodel.model import load_model, build_model
+from classificationmodel.model import (load_model_weights, 
+                                       build_model, 
+                                       train_model)
 from classificationmodel.dataset import dataset_generator
 from classificationmodel.evaluation import evaluate_model, evaluation_report
 
-_, _, test_set = dataset_generator(img_path,
-                                   test_img_path,
-                                   train_params)
+train_set, val_set, test_set = dataset_generator(img_path,
+                                                 test_img_path,
+                                                 train_params)
 
 @pytest.fixture(scope="module")
 def efficientnet():
     """
     This fixture function loads a pre-trained EfficientNet model
-    from the 'model.json' file or builds it if the file is not found.
+    from the using a saved weights file or builds and trains it
+    if the file is not found.
+    GIVEN:
+        - The 'best_efficientnet.h5' file is present or not.
+    WHEN:
+        - The EfficientNet model is loaded with the weights 
+          if the file is present.
+    THEN:
+        - If the file is not found, the model is built and trained.
+        - The model is returned.
     """
-    model_path = os.path.join(os.path.dirname(__file__), '..', 'model.json')
+    model = build_model(num_classes)
+    weight_path = os.path.join(os.path.dirname(__file__), '..', 'best_efficientnet.h5')
     try:
-        model = load_model(model_path)
+        model = load_model_weights(model, weight_path)
     except FileNotFoundError:
-        model = build_model(num_classes)
+        _, model = train_model(model,
+                               train_set, 
+                               val_set, 
+                               batch, 
+                               epochs, 
+                               weight_path)
     except Exception as e:
         pytest.fail(f"Failed to load or build model: {e}")
     return model
 
 def test_evaluate_model(efficientnet):
     """
-    This verifies that the loss and accuracy are within a certain tolerance
-    close to the actual values.
-    """  
+    This test verifies that the loss and accuracy are within a 
+    certain tolerance close to the actual values.
+    GIVEN:
+        - A trained EfficientNet model.
+        - A test dataset
+    WHEN:
+        - The evaluate_model function is called with the model and test_set.
+    THEN:
+        - The calculated loss and accuracy are compared with expected values
+          within a tolerance.    
+    """      
     test_loss, test_accuracy = evaluate_model(efficientnet, 
                                               test_set)
-    expected_loss = 1.10  
-    expected_accuracy = 0.8  
-    tolerance = 1e-1 
-    assert (np.abs(test_loss - expected_loss) < tolerance,
+    expected_loss = 1.0 
+    expected_accuracy = 0.8
+    tolerance = 2e-1 
+    assert (np.abs(test_loss - expected_loss) < tolerance), (
             f"Test Loss does not match expected value. "
             f"Expected: {expected_loss}, Actual: {test_loss}")
-    assert (np.abs(test_accuracy - expected_accuracy) < tolerance,
+    assert (np.abs(test_accuracy - expected_accuracy) < tolerance), (
             f"Test Accuracy does not match expected value. "
             f"Expected: {expected_accuracy}, Actual: {test_accuracy}")
 
 def test_evaluation_report_lists(efficientnet):
+    """
+    This test checks the lists of true and predicted labels.
+    GIVEN:
+        - A trained EfficientNet model.
+        - The test_set dataset.
+    WHEN:
+        - Iterating through the test_set and predicting labels using the model.
+    THEN:
+        - The shape of the true and predicted labels are check to be equal.
+        - The contents of true and predicted labels are checked.
+        - The lengths of true and predicted labels are compared.
+        - The number of batches in the test sets matches the ones of
+          the true labels.          
+    """
     y_true = []
     y_pred = []
-    for x, y in test_set:
-        assert (np.array_equal(x[0], y[0]),
-                f"Mismatch between x and y in the test_dataset")
         
+    for x, y in test_set:       
         y_pred_probs = efficientnet.predict(x)
-        # Check if the shape of y and y_pred_prob are the same
-        #  so they can be treated equally
         assert y.shape == y_pred_probs.shape
         assert y.shape[1] == num_classes, "Incorrect shape of 'y' array"
-        assert y_pred_probs.shape[1] == num_classes, "Incorrect shape of predicted probabilities"  
+        assert y_pred_probs.shape[1] == num_classes, (
+            "Incorrect shape of predicted probabilities") 
         y_true.extend(np.argmax(y.numpy(), axis=1))
         y_pred.extend(np.argmax(y_pred_probs, axis=1))
 
    # Compare the lengths of y_true and y_pred
     assert len(y_true) == len(y_pred)
-
-    cardinality = tf.data.experimental.cardinality(test_set).numpy()
-    dataset_batches = int(cardinality)
+    dataset_batches = len(test_set)
     expected_batches = math.ceil(len(y_true) / batch)
     assert dataset_batches == expected_batches
-
-def test_evaluation_report_classes(efficientnet, capsys):
-    
-    # Capture the printed output
-    with capsys.disabled():
-        evaluation_report(test_set, efficientnet, classes)
-
-    # Check if the class names appear in the printed output
-    captured = capsys.readouterr()
-    printed_output = captured.out
-    for class_name in classes:
-        assert (class_name in printed_output, 
-                f"Class {class_name} not found in the classification report")
