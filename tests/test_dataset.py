@@ -3,6 +3,8 @@ import sys
 import tensorflow as tf
 import pytest
 import configparser
+import math
+from PIL import Image
 
 #Get the parameters
 config = configparser.ConfigParser()
@@ -63,12 +65,20 @@ def test_dataset_generator_returns_tuple(data_generators):
 def test_dataset_generator_length(data_generators):
     """
     This test checks if the length of the training,
-    validation and test sets generated are greater than zero.
+    validation and test sets generated are greater than zero,
+    and that the number of batches is the expected one.
     """
     train_set, val_set, test_set = data_generators
-    assert tf.data.experimental.cardinality(train_set) > 0
-    assert tf.data.experimental.cardinality(val_set) > 0
-    assert tf.data.experimental.cardinality(test_set) > 0
+    assert len(train_set) > 0
+    assert len(val_set) > 0
+    assert len(test_set) > 0
+    #900 is the expected number of images in the trainign set
+    expected_train_batches = math.ceil(900 / batch)
+    assert len(train_set) == expected_train_batches
+    #100 is the expected number of images in both the val and test sets
+    expected_val_batches = math.ceil(100 / batch) 
+    assert len(val_set) == len(test_set)
+    assert len(val_set) == expected_val_batches
 
 def test_dataset_generator_image_shape_dtype(data_generators):
     """
@@ -84,3 +94,23 @@ def test_dataset_generator_image_shape_dtype(data_generators):
     assert x_train.dtype == 'float32'
     assert y_train.shape == (train_params['batch_size'], num_classes)
     assert y_train.dtype == 'float32'
+
+
+def test_dataset_generator():
+    """
+    This test checks if the images are loaded from a given directory.
+    """
+    test_train_params = {
+        "label_mode": "categorical",
+        "color_mode": "rgb",
+        "batch_size": 1,
+        "image_size": (3, 3),
+        "seed": 42,
+    }
+    train_set_test, val_set_test, test_set_test = dataset_generator(
+                                                    'tests/test_dataset_images', 
+                                                    'tests/test_dataset_images',
+                                                    test_train_params)
+    assert len(train_set_test) == 9
+    assert len(val_set_test) == 1
+    assert len(test_set_test) == 10
