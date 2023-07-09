@@ -4,7 +4,6 @@ import tensorflow as tf
 import pytest
 import configparser
 import math
-from PIL import Image
 
 #Get the parameters
 config = configparser.ConfigParser()
@@ -41,10 +40,18 @@ from classificationmodel.dataset import dataset_generator
 @pytest.fixture(scope="module")
 def data_generators():
     """
-    This fixture function creates training, validation and test set generators
-    using the dataset_generator function from dataset.py with the parameters
-    defined in parameters.py.
-    It returns the generators for use in the tests.
+    This fixture prepares the datasets to use in the tests.
+    GIVEN:
+        - The dataset generator function from dataset.py is called
+          with the parameters defined in test_parameters.ini.
+
+    WHEN:
+        - dataset_generator builds the datasets.
+
+    THEN:
+        - Training, validation, and test set generators are created 
+          using the dataset generator function.
+        - The generators are returned for use in the tests.
     """
     train_set, val_set, test_set = dataset_generator(img_path, 
                                                      test_img_path, 
@@ -56,6 +63,15 @@ def test_dataset_generator_returns_tuple(data_generators):
     This test checks if the dataset_generator function returns three objects
     of type tf.data.Dataset, which are used for training, validation
     and testing the model respectively.
+    GIVEN:
+        - The data generators fixture function.
+
+    WHEN:
+        - The dataset generator function returns three datasets.
+
+    THEN:
+        - The returned datasets correspond to three objects of 
+          type tf.data.Dataset.
     """
     train_set, val_set, test_set = data_generators
     assert isinstance(train_set, tf.data.Dataset)
@@ -67,12 +83,25 @@ def test_dataset_generator_length(data_generators):
     This test checks if the length of the training,
     validation and test sets generated are greater than zero,
     and that the number of batches is the expected one.
+    GIVEN:
+        - The data generators fixture function.
+    WHEN:
+        - The dataset generator function returns three datasets.
+        - The expected number of batches for all of the datasets are 
+          calculated rounding to the next integer, 
+          knowing the number of images and of the batches.
+    THEN:
+        - The number of batches in each dataset is greater than zero.
+        - The number of batches per each dataset matches the expected 
+          value based on the batch size and number of images.
+        - The number of batches in the validation and test sets matches
+          each other due to the same number of images in each set.
     """
     train_set, val_set, test_set = data_generators
     assert len(train_set) > 0
     assert len(val_set) > 0
     assert len(test_set) > 0
-    #900 is the expected number of images in the trainign set
+    #900 is the expected number of images in the train set
     expected_train_batches = math.ceil(900 / batch)
     assert len(train_set) == expected_train_batches
     #100 is the expected number of images in both the val and test sets
@@ -82,8 +111,16 @@ def test_dataset_generator_length(data_generators):
 
 def test_dataset_generator_image_shape_dtype(data_generators):
     """
-    This test checks if the shape and dtype of the images and labels generated
-    match the expected values.
+    This test checks if the shape and dtype of the images and labels
+    in the datasets match the expected values.
+    GIVEN:
+        - The data generators fixture function.
+    WHEN:
+        - The dataset generator function returns three datasets.
+        - The batches of the train_set are accessed by transforming the dataset
+          into an terable object.
+    THEN:
+        - The tensor shape matches the given one through the parameters.
     """
     train_set, _, _ = data_generators
     x_train, y_train = next(iter(train_set))
@@ -99,6 +136,20 @@ def test_dataset_generator_image_shape_dtype(data_generators):
 def test_dataset_generator():
     """
     This test checks if the images are loaded from a given directory.
+    GIVEN:
+        - A test image folder with images of size 3x3 pixels.
+        - Parameters to create the datasets.
+    WHEN:
+        - The dataset_generator function is executed in this folder.
+    THEN:
+        - Training, validation, and test sets are generated
+          from the given folder.
+        - The length of the training set matches the 90% of 
+          images in the test folder.
+        - The length of the validation set matches the 10% of
+          images in the test folder.
+        - The length of the test set is the same as the number
+          of images in the test folder.
     """
     test_train_params = {
         "label_mode": "categorical",
