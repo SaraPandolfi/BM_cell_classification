@@ -30,7 +30,7 @@ def evaluation_report(test_dataset, model, classes):
         classes (list): List of class names.
     
     Returns: 
-        None.
+        Dictionary with the Classification Report.
     """
     y_true = []
     y_pred = []
@@ -40,3 +40,5 @@ def evaluation_report(test_dataset, model, classes):
         y_pred.extend(np.argmax(y_pred_probs, axis=1))
     
     print(classification_report(y_true, y_pred, target_names=classes))
+    report = classification_report(y_true, y_pred, target_names=classes, output_dict= True)
+    return report

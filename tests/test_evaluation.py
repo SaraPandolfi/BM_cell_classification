@@ -62,7 +62,6 @@ def efficientnet():
         - The model is returned.
     """
     model = build_model(num_classes)
-    weight_path = os.path.join(os.path.dirname(__file__), '..', 'best_efficientnet.h5')
     try:
         model = load_model_weights(model, weight_path)
     except FileNotFoundError:
@@ -133,3 +132,21 @@ def test_evaluation_report_lists(efficientnet):
     dataset_batches = len(test_set)
     expected_batches = math.ceil(len(y_true) / batch)
     assert dataset_batches == expected_batches
+
+def test_evaluation_report_labels(efficientnet):
+    """
+    This test checks if the generated classification report contains the expected labels.
+    GIVEN:
+        - A test dataset.
+        - A trained model.
+        - A list of class names.
+    WHEN:
+        - The evaluation_report function is called with the given inputs.
+    THEN:
+        - The generated classification report contains the expected labels.
+    """
+    expected_labels = classes
+    report = evaluation_report(test_set, efficientnet, classes)
+    report_labels = report.keys()
+    assert set(expected_labels).issubset(report_labels), (
+        "Labels are missing in the classification report")
