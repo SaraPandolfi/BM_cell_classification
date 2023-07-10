@@ -103,7 +103,7 @@ def test_load_model_weights_existing_file(efficientnet):
         - The function successfully loads the weights into the model.
         - The loaded model is still an efficientnet model.
     """
-    loaded_model = load_model_weights(efficientnet, str(weight_path))
+    loaded_model = load_model_weights(efficientnet, weight_path)
     assert loaded_model == efficientnet
 
 def test_load_model_weights_nonexistent_file(efficientnet):

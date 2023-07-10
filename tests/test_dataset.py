@@ -44,10 +44,8 @@ def data_generators():
     GIVEN:
         - The dataset generator function from dataset.py is called
           with the parameters defined in test_parameters.ini.
-
     WHEN:
         - dataset_generator builds the datasets.
-
     THEN:
         - Training, validation, and test set generators are created 
           using the dataset generator function.
@@ -65,10 +63,8 @@ def test_dataset_generator_returns_tuple(data_generators):
     and testing the model respectively.
     GIVEN:
         - The data generators fixture function.
-
     WHEN:
         - The dataset generator function returns three datasets.
-
     THEN:
         - The returned datasets correspond to three objects of 
           type tf.data.Dataset.

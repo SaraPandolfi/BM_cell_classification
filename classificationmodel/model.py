@@ -16,7 +16,7 @@ def build_model(num_classes):
         num_classes (int): Number of classes to classify.
     
     Returns:
-        EfficientNetB3 keras model.
+        EfficientNetB3 keras.Model.
     """    
     model = EfficientNetB3(include_top=True,
                            weights=None,
@@ -35,15 +35,18 @@ def build_model(num_classes):
 def load_model_weights(model, weight_path):
     """
     Loads pre-trained model weights from a file.
-    If the weights file exists, it loads the weights into the given model and returns the model.
-    Otherwise, it prints a message indicating that no pre-trained weights were found and returns None.
+    If the weights file exists, it loads the weights into the given model
+    and returns the model.
+    Otherwise, it prints a message indicating that no pre-trained weights
+    were found and returns None.
 
     Parameters:
         model (keras.Model): Model to load the weights into.
         weight_path (str): Path to the pre-traned saved weights.
 
     Returns:
-        keras.Model or None: Loaded model if the weights were loaded successfully, None otherwise.
+        keras.Model or None: Loaded model if the weights were
+        loaded successfully, None otherwise.
     """
     if os.path.exists(weight_path):
         print('Loading pre-trained model from file...')
@@ -61,7 +64,8 @@ def train_model(model, train_set, val_set, batch, epochs, weight_path):
     in the variable history.
     Evaluates it on the validation set.
     Adds the callbacks attribute to the model object.
-    The trained model is saved to the file specified by `model_path`.
+    The weights of the trained model are saved into the .h5
+    file in `weight_path`.
     
     Parameters:
         model (keras.Model): Model to train.
@@ -72,7 +76,7 @@ def train_model(model, train_set, val_set, batch, epochs, weight_path):
         weight_path (str): Path to the .h5 file to store the updated weights.
     
     Returns:
-        Tuple containing the training history and the trained model.
+        Tuple containing the training history and the trained keras.Model.
     """     
     checkpoint = ModelCheckpoint(weight_path,
                                  monitor='val_accuracy',
@@ -118,7 +122,7 @@ def load_model(model_path):
         model_path (str): File path to load the model from.
     
     Returns:
-        keras.Model: Loaded model.
+        Loaded keras.Model.
     """
     with open(model_path, 'r') as file:
         model_json = file.read()

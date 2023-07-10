@@ -50,13 +50,12 @@ def image_visualization(dataset, classes):
     """
     Visualizes a sample of images from a dataset.
 
-    Args:
+    Parameters:
         dataset (tf.data.Dataset): The dataset containing images.
         classes (list): List of class labels.
 
     Returns:
         None
-
     """
     plt.figure(figsize=(12, 8))
     # select images only from the first batch
