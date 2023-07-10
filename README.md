@@ -108,10 +108,8 @@ The images IDs used are reported in the file [images_IDs](https://github.com/Sar
     classes = config.get('setting', 'classes').split(',')
 
     #evaluate the model and print the classification report, loss and accuracy
-    test_loss, test_accuracy = evaluate_model(trained_model, test_set)
-    print(f'Test Loss: {test_loss}')
-    print(f'Test Accuracy: {test_accuracy}')    
-    evaluation_report(test_set, efficientNet, classes)
+    test_loss, test_accuracy = evaluate_model(trained_model, test_set) 
+    final_report = evaluation_report(test_set, efficientNet, classes)
 ```
 ## Organization
 

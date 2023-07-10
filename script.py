@@ -52,5 +52,5 @@ plot_history(history)
 
 #Use a separate dataset to evaluate the model on its loss, accuracy
 #and classification report from sklearn
-evaluate_model(trained_model, test_set)
-evaluation_report(test_set, efficientNet, classes)
+evaluation_loss, evaluation_accuracy = evaluate_model(trained_model, test_set)
+final_report = evaluation_report(test_set, efficientNet, classes)
