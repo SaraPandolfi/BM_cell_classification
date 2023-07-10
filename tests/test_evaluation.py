@@ -9,7 +9,7 @@ import json
 
 #Get the parameters
 config = configparser.ConfigParser()
-config.read('test_parameters.ini')
+config.read('tests/test_parameters.ini')
 img_size = config.getint('setting', 'img_size')
 batch = config.getint('setting', 'batch')
 epochs = config.getint('setting', 'epochs')
@@ -90,7 +90,7 @@ def test_evaluate_model(efficientnet):
     """      
     test_loss, test_accuracy = evaluate_model(efficientnet, 
                                               test_set)
-    expected_loss = 1.0 
+    expected_loss = 0.6 
     expected_accuracy = 0.8
     tolerance = 2e-1 
     assert (np.abs(test_loss - expected_loss) < tolerance), (

@@ -7,7 +7,7 @@ import math
 
 #Get the parameters
 config = configparser.ConfigParser()
-config.read('test_parameters.ini')
+config.read('tests/test_parameters.ini')
 
 img_size = config.getint('setting', 'img_size')
 batch = config.getint('setting', 'batch')
