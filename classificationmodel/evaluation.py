@@ -9,7 +9,6 @@ def evaluate_model(model, test_dataset):
     Parameters:
         model (keras.Model): Trained model.
         test_dataset (tf.data.Dataset): Test dataset.
-        classes (list): List of class names.
 
     Returns:
         Tuple containing the loss and accuracy.
