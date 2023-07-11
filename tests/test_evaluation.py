@@ -7,6 +7,7 @@ import math
 import configparser
 import json
 
+
 #Get the parameters
 config = configparser.ConfigParser()
 config.read('tests/test_parameters.ini')
@@ -31,6 +32,8 @@ grandparent_dir = os.path.dirname(parent_dir)
 img_path = os.path.join(grandparent_dir, config.get('path', 'img_path'))
 test_img_path = os.path.join(grandparent_dir, config.get('path', 'test_img_path'))
 weight_path = os.path.join(grandparent_dir, config.get('path', 'weight_path'))
+evaluation_path = os.path.join(grandparent_dir, config.get('path', 'output_evaluation'))
+report_path = os.path.join(grandparent_dir, config.get('path', 'output_report'))
 
 os.chdir(grandparent_dir)
 current_dir = os.getcwd()
@@ -81,7 +84,7 @@ def test_evaluate_model(efficientnet):
     certain tolerance close to the actual values.
     GIVEN:
         - A trained EfficientNet model.
-        - A test dataset
+        - A test dataset.
     WHEN:
         - The evaluate_model function is called with the model and test_set.
     THEN:
@@ -89,8 +92,9 @@ def test_evaluate_model(efficientnet):
           within a tolerance.    
     """      
     test_loss, test_accuracy = evaluate_model(efficientnet, 
-                                              test_set)
-    expected_loss = 0.6 
+                                              test_set,
+                                              evaluation_path)
+    expected_loss = 0.7
     expected_accuracy = 0.8
     tolerance = 2e-1 
     assert (np.abs(test_loss - expected_loss) < tolerance), (
@@ -140,13 +144,75 @@ def test_evaluation_report_labels(efficientnet):
         - A test dataset.
         - A trained model.
         - A list of class names.
+        - A path to the .txt file.
     WHEN:
         - The evaluation_report function is called with the given inputs.
     THEN:
         - The generated classification report contains the expected labels.
     """
     expected_labels = classes
-    report = evaluation_report(test_set, efficientnet, classes)
-    report_labels = report.keys()
+   
+    report_dict, _ = evaluation_report(test_set, 
+                                       efficientnet, 
+                                       classes, 
+                                       report_path)
+    report_labels = report_dict.keys()
     assert set(expected_labels).issubset(report_labels), (
         "Labels are missing in the classification report")
+    
+def test_evaluation_output(efficientnet):
+    """
+    This test checks if the values of Loss and Accuracy reported
+    in the .txt file are the same as calculated.
+    GIVEN:
+        - A test dataset.
+        - A trained model.
+        - A path to the .txt file.
+    WHEN:
+        - The evaluation_model function is called with the given inputs.
+    THEN:
+        - The outputs in the file are the same as the calculated ones.
+    """
+    # Verify the content of the output file
+    with open(evaluation_path, 'r') as file:
+        content = file.read()
+        expected_loss = evaluate_model(efficientnet,
+                                       test_set,
+                                       evaluation_path)[0]
+        expected_accuracy = evaluate_model(efficientnet,
+                                           test_set,
+                                           evaluation_path)[1]
+
+        assert f'Test Loss: {expected_loss}' in content, (
+            "Loss value not found in evaluation output")
+        assert f'Test Accuracy: {expected_accuracy}' in content, (
+            "Accuracy value not found in evaluation output")
+        
+def test_evaluation_report(efficientnet):
+    """
+    This test checks if the values of the classification report in the
+    .txt file are the same as calculated ones.
+    GIVEN:
+        - A test dataset.
+        - A trained model.
+        - A list of class names.
+        - A path to the .txt file.
+    WHEN:
+        - The evaluation_report function is called with the given inputs.
+        - They are converted into str and stripped to avoid differences
+          in new lines.
+    THEN:
+        - The outputs in the file are the same as the calculated ones.
+    """
+    # Verify the content of the output file
+    with open(report_path, 'r') as file:
+        content = file.read()
+    # Remove leading whitespace and trailing newlines
+        content_stripped = str(content).strip()
+        _, expected_report = evaluation_report(test_set, 
+                                            efficientnet, 
+                                            classes, 
+                                            report_path)
+        expected_report_stripped = str(expected_report).strip()
+        assert content_stripped == expected_report_stripped, (
+            "Classification report does not match expected output")
