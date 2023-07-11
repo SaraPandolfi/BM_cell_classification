@@ -9,6 +9,8 @@ from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 import configparser
 import json
 import filecmp
+import numpy as np
+import math
 
 #Get the parameters
 config = configparser.ConfigParser()
@@ -102,9 +104,13 @@ def test_load_model_weights_existing_file(efficientnet):
     THEN:
         - The function successfully loads the weights into the model.
         - The loaded model is still an efficientnet model.
+        - The file exists.
     """
     loaded_model = load_model_weights(efficientnet, weight_path)
     assert loaded_model == efficientnet
+    assert os.path.exists(weight_path)
+    # Assert that the weights are loaded into the model
+    assert loaded_model.get_weights() != []
 
 def test_load_model_weights_nonexistent_file(efficientnet):
     """
@@ -117,11 +123,23 @@ def test_load_model_weights_nonexistent_file(efficientnet):
         - The load_model_weights function is called with the model
           and non-existent weights file path.
     THEN:
-        - The function returns False.
-        - No weights are loaded into the model.
+        - The function returns the model itself.
+        - The length of the weights arrays is the same.
+        - The weights are the same.
     """
+    # Get the original model's weights
+    original_weights = efficientnet.get_weights()
+
+    # Call the load_model_weights function with a non-existent file path
     loaded_model = load_model_weights(efficientnet, 'nonexistent_weights.h5')
-    assert loaded_model == False
+
+    # Assert that the loaded_model is the same instance as efficientnet
+    assert loaded_model is efficientnet
+    loaded_weights = loaded_model.get_weights()
+    # Assert that the loaded model's weights are equal to the original model's ones
+    assert len(loaded_weights) == len(original_weights)
+    for loaded_layer_weights, original_layer_weights in zip(loaded_weights, original_weights):
+        assert np.array_equal(loaded_layer_weights, original_layer_weights)
 
 def test_compile_model(efficientnet):
     """

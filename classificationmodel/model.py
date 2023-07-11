@@ -45,8 +45,8 @@ def load_model_weights(model, weight_path):
         weight_path (str): Path to the pre-traned saved weights.
 
     Returns:
-        keras.Model or None: Loaded model if the weights were
-        loaded successfully, None otherwise.
+        keras.Model: Loaded model if the weights were
+        loaded successfully, otherwise the input model itself.
     """
     if os.path.exists(weight_path):
         print('Loading pre-trained model from file...')
@@ -54,7 +54,7 @@ def load_model_weights(model, weight_path):
         return model
     else:
         print('No pre-trained model weights found.')
-        return False
+        return model
 
 def train_model(model, train_set, val_set, batch, epochs, weight_path):
     """
