@@ -62,7 +62,7 @@ def test_dataset_generator_returns_tuple(data_generators):
     of type tf.data.Dataset, which are used for training, validation
     and testing the model respectively.
     GIVEN:
-        - The data generators fixture function.
+        - The data_generators fixture function.
     WHEN:
         - The dataset generator function returns three datasets.
     THEN:
@@ -80,7 +80,7 @@ def test_dataset_generator_length(data_generators):
     validation and test sets generated are greater than zero,
     and that the number of batches is the expected one.
     GIVEN:
-        - The data generators fixture function.
+        - The data_generators fixture function.
     WHEN:
         - The dataset generator function returns three datasets.
         - The expected number of batches for all of the datasets are 
@@ -110,7 +110,7 @@ def test_dataset_generator_image_shape_dtype(data_generators):
     This test checks if the shape and dtype of the images and labels
     in the datasets match the expected values.
     GIVEN:
-        - The data generators fixture function.
+        - The data_generators fixture function.
     WHEN:
         - The dataset generator function returns three datasets.
         - The batches of the train_set are accessed by transforming the dataset
@@ -133,7 +133,7 @@ def test_dataset_generator():
     """
     This test checks if the images are loaded from a given directory.
     GIVEN:
-        - A test image folder with images of size 3x3 pixels.
+        - A test image folder with 10 images of size 3x3 pixels.
         - Parameters to create the datasets.
     WHEN:
         - The dataset_generator function is executed in this folder.
