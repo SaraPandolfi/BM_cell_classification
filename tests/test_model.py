@@ -102,15 +102,18 @@ def test_load_model_weights_existing_file(efficientnet):
         - The load_model_weights function is called with the model
           and weights file path.
     THEN:
-        - The function successfully loads the weights into the model.
         - The loaded model is still an efficientnet model.
         - The file exists.
+        - The weights of the efficientnet and of the loaded 
+          model are different.
     """
+    # Get the original model's weights
+    original_weights = efficientnet.get_weights()
     loaded_model = load_model_weights(efficientnet, weight_path)
+    loaded_weights = loaded_model.get_weights()
     assert loaded_model == efficientnet
     assert os.path.exists(weight_path)
-    # Assert that the weights are loaded into the model
-    assert loaded_model.get_weights() != []
+    assert not np.array_equal(loaded_weights, original_weights)
 
 def test_load_model_weights_nonexistent_file(efficientnet):
     """
@@ -123,7 +126,8 @@ def test_load_model_weights_nonexistent_file(efficientnet):
         - The load_model_weights function is called with the model
           and non-existent weights file path.
     THEN:
-        - The function returns the model itself.
+        - The function returns an efficient model.
+        - The file doesn't exist.
         - The length of the weights arrays is the same.
         - The weights are the same.
     """
@@ -134,8 +138,9 @@ def test_load_model_weights_nonexistent_file(efficientnet):
     loaded_model = load_model_weights(efficientnet, 'nonexistent_weights.h5')
 
     # Assert that the loaded_model is the same instance as efficientnet
-    assert loaded_model is efficientnet
+    assert loaded_model == efficientnet
     loaded_weights = loaded_model.get_weights()
+    assert not os.path.exists('nonexistent_weights.h5')
     # Assert that the loaded model's weights are equal to the original model's ones
     assert len(loaded_weights) == len(original_weights)
     for loaded_layer_weights, original_layer_weights in zip(loaded_weights, original_weights):
