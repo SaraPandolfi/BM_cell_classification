@@ -1,7 +1,7 @@
 # Script for the classification workflow using the configured settings.
 
-from classificationmodel.dataset import (dataset_generator, 
-                                         image_visualization)
+from classificationmodel.dataset import dataset_generator 
+                                         
 from classificationmodel.model import (build_model, 
                                        load_model_weights,
                                        train_model, 
@@ -30,12 +30,13 @@ img_path = config.get('path', 'img_path')
 test_img_path = config.get('path', 'test_img_path')
 weight_path = config.get('path', 'weight_path')
 model_path = config.get('path', 'model_path')
+output_report = config.get('path', 'output_report')
+output_evaluation = config.get('path', 'output_evaluation')
 
-#Create the datasets to classify and visualize a batch of images.
+#Create the datasets to classify 
 train_set, val_set, test_set = dataset_generator(img_path,
                                                  test_img_path,
                                                  train_params)
-image_visualization(train_set, classes)
 
 #Build the classification model and load into it pre-trained weights.
 #Train it, save it for future application and visualize its history.
@@ -52,5 +53,5 @@ plot_history(history)
 
 #Use a separate dataset to evaluate the model on its loss, accuracy
 #and classification report from sklearn
-evaluation_loss, evaluation_accuracy = evaluate_model(trained_model, test_set)
-final_report = evaluation_report(test_set, efficientNet, classes)
+evaluation_loss, evaluation_accuracy = evaluate_model(trained_model, test_set, output_evaluation)
+evaluation_report(test_set, efficientNet, classes, output_report)
