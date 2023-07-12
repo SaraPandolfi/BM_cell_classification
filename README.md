@@ -7,6 +7,7 @@ Table of contents
 - Installation
 - Images download
 - Usage
+- Testing
 - Organization
 
 
@@ -51,66 +52,23 @@ The images IDs used are reported in the file [images_IDs](https://github.com/Sar
 
 
 ## Usage
-
-1. Dataset preparation:
-```python
-    #import the function and from config.ini the paths to the images folders and for the dataset setup
-    from classificationmodel.dataset import dataset_generator
-    #Get the parameters
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    img_path = config.get('path', 'img_path')
-    test_img_path = config.get('path', 'test_img_path')
-    train_params = {
-    'label_mode': config.get('setting', 'label_mode'),
-    'color_mode': config.get('setting', 'color_mode'),
-    'batch_size': config.getint('setting', 'batch'),
-    'image_size': eval(config.get('setting', 'image_size')),
-    'seed': config.getint('setting', 'seed')}
-
-    #build the datasets for training, validation and final testing
-    train_set, val_set, test_set = dataset_generator(img_path,
-                                                 test_img_path,
-                                                 train_params)
-```
-2. Model training
-```python
-    #import the functions to create, train, save the model and finally plot its history
-    #import the parametes for the training of the model
-    from classificationmodel.model import build_model, train_model, save_model, plot_history
-    batch = config.getint('setting', 'batch')
-    epochs = config.getint('setting', 'epochs')
-    num_classes = config.getint('setting', 'num_classes')
-    weight_path = config.get('path', 'weight_path')
-
-    #build the efficientNet model
-    efficientNet = build_model(num_classes)
-
-    #train the model, store the history and the trained model
-    model_history, trained_model = train_model(efficientNet,
-                                                train_set, 
-                                                val_set, 
-                                                batch, 
-                                                epochs,
-                                                weight_path)
+To use the classification model on the built images folders the following steps can be performed:
+1. Parameters setting:
+    The parameters stored in the config.ini file can be used directly or modified according to the user's requests.
+2. Program execution:
+    The classification is performed by executing the [script.py](https://github.com/SaraPandolfi/BM_cell_classification/blob/master/script.py)
+3. Model results:
+    The resulting statistics of the model will be printed out both in the terminal and in the files indicated in the config.ini file as 'output_evaluation' and 'output_report'. Moreover the saved weights will be found at the path 'best_efficientnet.h5' and the trained model at 'model.json'.
     
-    #save the model for future applications
-    saved_model = save_model(efficientNet, 'model.json')
+## Testing
 
-    #plot the histry as accuracy and loss over the epochs
-    plot_history(model_history)
-```
-3. Model evaluation
-```python
-    #import the function to evaluate the model and print the classification report of sklearn
-    #import the name of the classes classified from the parameters
-    from classificationmodel.evaluation import evaluate_model
-    classes = config.get('setting', 'classes').split(',')
+To test the classification model it can be used pytest testing tool. The tests are in the folder `tests`, and the following lines will run the tests:
 
-    #evaluate the model and print the classification report, loss and accuracy
-    test_loss, test_accuracy = evaluate_model(trained_model, test_set) 
-    final_report = evaluation_report(test_set, efficientNet, classes)
-```
+    pip install pytest-cov
+    cd BM_cell_classification
+    pytest --cov=classificationmodel tests/  
+
+
 ## Organization
 
 The project has been subdivided as follows:
