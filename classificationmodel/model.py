@@ -38,7 +38,7 @@ def load_model_weights(model, weight_path):
     If the weights file exists, it loads the weights into the given model
     and returns the model.
     Otherwise, it prints a message indicating that no pre-trained weights
-    were found and returns None.
+    were found and returns the model itself.
 
     Parameters:
         model (keras.Model): Model to load the weights into.
