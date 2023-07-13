@@ -40,7 +40,7 @@ def evaluation_report(test_dataset, model, classes, output_report):
         output_report (str): Path to .txt file to write into the report.
     
     Returns: 
-        Dict and str with the Classification Report.
+        Tuple containing the dict and str of the Classification Report.
     """
     y_true = []
     y_pred = []
