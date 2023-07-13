@@ -14,6 +14,7 @@ config.read('tests/test_parameters.ini')
 img_size = config.getint('setting', 'img_size')
 batch = config.getint('setting', 'batch')
 epochs = config.getint('setting', 'epochs')
+training_epochs = config.getint('setting', 'epochs_for_training')
 classes = config.get('setting', 'classes').split(',')
 num_classes = config.getint('setting', 'num_classes')
 train_params = {
@@ -53,7 +54,7 @@ train_set, val_set, test_set = dataset_generator(img_path,
 def efficientnet():
     """
     This fixture function loads a pre-trained EfficientNet model
-    from the using a saved weights file or builds and trains it
+    from a saved weights file or builds and trains it
     if the file is not found.
     GIVEN:
         - The 'best_efficientnet.h5' file is present or not.
@@ -72,7 +73,7 @@ def efficientnet():
                                train_set, 
                                val_set, 
                                batch, 
-                               epochs, 
+                               training_epochs, 
                                weight_path)
     except Exception as e:
         pytest.fail(f"Failed to load or build model: {e}")
