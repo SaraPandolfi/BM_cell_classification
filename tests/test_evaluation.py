@@ -6,23 +6,18 @@ import tensorflow as tf
 import math
 import configparser
 import json
-
-
-#Get the parameters
+# Specify the absolute file path of the configuration file
+config_file_path = 'tests/test_parameters.json'
 config = configparser.ConfigParser()
-config.read('tests/test_parameters.ini')
-img_size = config.getint('setting', 'img_size')
-batch = config.getint('setting', 'batch')
-epochs = config.getint('setting', 'epochs')
-training_epochs = config.getint('setting', 'epochs_for_training')
-classes = config.get('setting', 'classes').split(',')
-num_classes = config.getint('setting', 'num_classes')
-train_params = {
-    'label_mode': config.get('setting', 'label_mode'),
-    'color_mode': config.get('setting', 'color_mode'),
-    'batch_size': config.getint('setting', 'batch'),
-    'image_size': eval(config.get('setting', 'image_size')),
-    'seed': config.getint('setting', 'seed')}
+with open(config_file_path) as config_file:
+    config = json.load(config_file)
+
+batch = config['setting']['batch']
+epochs = config['setting']['epochs']
+training_epochs = config['setting']['epochs_for_training']
+classes = config['setting']['classes']
+num_classes = config['setting']['num_classes']
+train_params = config['setting']['train_params']
 
 # Get the current file's absolute path and move backward to 
 # get the folders' paths and add the directory to the Python module search path
@@ -30,11 +25,11 @@ current_file = os.path.abspath(__file__)
 parent_dir = os.path.dirname(current_file)
 grandparent_dir = os.path.dirname(parent_dir)
 
-img_path = os.path.join(grandparent_dir, config.get('path', 'img_path'))
-test_img_path = os.path.join(grandparent_dir, config.get('path', 'test_img_path'))
-weight_path = os.path.join(grandparent_dir, config.get('path', 'weight_path'))
-evaluation_path = os.path.join(grandparent_dir, config.get('path', 'output_evaluation'))
-report_path = os.path.join(grandparent_dir, config.get('path', 'output_report'))
+img_path = os.path.join(grandparent_dir, config['path']['img_path'])
+test_img_path = os.path.join(grandparent_dir, config['path']['test_img_path'])
+weight_path = os.path.join(grandparent_dir, config['path']['weight_path'])
+evaluation_path = os.path.join(grandparent_dir, config['path']['output_evaluation'])
+report_path = os.path.join(grandparent_dir, config['path']['output_report'])
 
 os.chdir(grandparent_dir)
 current_dir = os.getcwd()

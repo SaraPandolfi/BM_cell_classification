@@ -11,21 +11,18 @@ import json
 import filecmp
 import numpy as np
 import math
-
-#Get the parameters
+import json
+# Specify the absolute file path of the configuration file
+config_file_path = 'tests/test_parameters.json'
 config = configparser.ConfigParser()
-config.read('tests/test_parameters.ini')
+with open(config_file_path) as config_file:
+    config = json.load(config_file)
 
-img_size = config.getint('setting', 'img_size')
-batch = config.getint('setting', 'batch')
-epochs = config.getint('setting', 'epochs')
-classes = config.get('setting', 'classes').split(',')
-num_classes = config.getint('setting', 'num_classes')
-train_params = {'label_mode': config.get('setting', 'label_mode'),
-                'color_mode': config.get('setting', 'color_mode'),
-                'batch_size': config.getint('setting', 'batch'),
-                'image_size': eval(config.get('setting', 'image_size')),
-                'seed': config.getint('setting', 'seed')}
+batch = config['setting']['batch']
+epochs = config['setting']['epochs']
+classes = config['setting']['classes']
+num_classes = config['setting']['num_classes']
+train_params = config['setting']['train_params']
 
 # Get the current file's absolute path and move backward to 
 # get the folders' paths and add the directory to the Python module search path
@@ -33,10 +30,10 @@ current_file = os.path.abspath(__file__)
 parent_dir = os.path.dirname(current_file)
 grandparent_dir = os.path.dirname(parent_dir)
 
-img_path = os.path.join(grandparent_dir, config.get('path', 'img_path'))
-test_img_path = os.path.join(grandparent_dir, config.get('path', 'test_img_path'))
-weight_path = os.path.join(grandparent_dir, config.get('path', 'weight_path'))
-model_path = os.path.join(grandparent_dir, config.get('path', 'model_path'))
+img_path = os.path.join(grandparent_dir, config['path']['img_path'])
+test_img_path = os.path.join(grandparent_dir, config['path']['test_img_path'])
+weight_path = os.path.join(grandparent_dir, config['path']['weight_path'])
+model_path = os.path.join(grandparent_dir, model_path = config['path']['model_path'])
 
 os.chdir(grandparent_dir)
 current_dir = os.getcwd()
@@ -137,11 +134,9 @@ def test_load_model_weights_nonexistent_file(efficientnet):
     # Call the load_model_weights function with a non-existent file path
     loaded_model = load_model_weights(efficientnet, 'nonexistent_weights.h5')
 
-    # Assert that the loaded_model is the same instance as efficientnet
     assert loaded_model == efficientnet
     loaded_weights = loaded_model.get_weights()
     assert not os.path.exists('nonexistent_weights.h5')
-    # Assert that the loaded model's weights are equal to the original model's ones
     assert len(loaded_weights) == len(original_weights)
     for loaded_layer_weights, original_layer_weights in zip(loaded_weights, original_weights):
         assert np.array_equal(loaded_layer_weights, original_layer_weights)
@@ -174,10 +169,8 @@ def test_save_and_load_model(efficientnet):
     """
     original_model_path = 'original_model.json'
     save_model(efficientnet, original_model_path)
-    
     # Load the saved model
-    loaded_model = load_model(original_model_path)
-    
+    loaded_model = load_model(original_model_path)    
     # Save the loaded model
     loaded_model_path = 'loaded_model.json'
     save_model(loaded_model, loaded_model_path)
