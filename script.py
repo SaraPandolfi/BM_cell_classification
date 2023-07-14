@@ -2,36 +2,35 @@
 
 from classificationmodel.dataset import dataset_generator 
                                          
-from classificationmodel.model import (build_model, 
-                                       load_model_weights,
+from classificationmodel.model import (build_model,
                                        train_model, 
                                        save_model, 
                                        plot_history)
 from classificationmodel.evaluation import (evaluate_model, 
                                             evaluation_report)
 import configparser
+import json
 # Specify the absolute file path of the configuration file
-config_file_path = 'classificationmodel/config.ini'
+config_file_path = 'classificationmodel/config.json'
 
-# Load the configuration file to get the parameters and paths
+# Load the configuration file
 config = configparser.ConfigParser()
-config.read(config_file_path)
-img_size = config.getint('setting', 'img_size')
-classes = config.get('setting', 'classes').split(',')
-num_classes = config.getint('setting', 'num_classes')
-batch = config.getint('setting', 'batch')
-epochs = config.getint('setting', 'epochs')
-train_params = {'label_mode': config.get('setting', 'label_mode'),
-                'color_mode': config.get('setting', 'color_mode'),
-                'batch_size': config.getint('setting', 'batch'),
-                'image_size': eval(config.get('setting', 'image_size')),
-                'seed': config.getint('setting', 'seed')}
-img_path = config.get('path', 'img_path')
-test_img_path = config.get('path', 'test_img_path')
-weight_path = config.get('path', 'weight_path')
-model_path = config.get('path', 'model_path')
-output_report = config.get('path', 'output_report')
-output_evaluation = config.get('path', 'output_evaluation')
+# Read the JSON configuration file
+with open(config_file_path) as config_file:
+    config = json.load(config_file)
+
+# Access configuration values
+train_params = config['setting']['train_params']
+img_path = config['path']['img_path']
+test_img_path = config['path']['test_img_path']
+classes = config['setting']['classes']
+num_classes = config['setting']['num_classes']
+batch = config['setting']['batch']
+epochs = config['setting']['epochs']
+weight_path = config['path']['weight_path']
+model_path = config['path']['model_path']
+output_report = config['path']['output_report']
+output_evaluation = config['path']['output_evaluation']
 
 #Create the datasets to classify 
 train_set, val_set, test_set = dataset_generator(img_path,
@@ -41,17 +40,16 @@ train_set, val_set, test_set = dataset_generator(img_path,
 #Build the classification model and load into it pre-trained weights.
 #Train it, save it for future application and visualize its history.
 efficientNet = build_model(num_classes)
-loaded_efficientNet = load_model_weights(efficientNet, weight_path)
-history, trained_model = train_model(loaded_efficientNet, 
+history, trained_model = train_model(efficientNet, 
                                      train_set, 
                                      val_set, 
                                      batch, 
                                      epochs, 
                                      weight_path)
-saved_model = save_model(efficientNet, model_path)
+saved_model = save_model(trained_model, model_path)
 plot_history(history)
 
 #Use a separate dataset to evaluate the model on its loss, accuracy
 #and classification report from sklearn
 evaluation_loss, evaluation_accuracy = evaluate_model(trained_model, test_set, output_evaluation)
-evaluation_report(test_set, efficientNet, classes, output_report)
+evaluation_report(test_set, trained_model, classes, output_report)
