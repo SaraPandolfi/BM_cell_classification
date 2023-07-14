@@ -1,0 +1,25 @@
+{
+  "path": {
+    "img_path": "images",
+    "test_img_path": "test_images",
+    "weight_path": "best_efficientnet_test.h5",
+    "model_path": "model_test.json",
+    "output_report": "tests/classification_report_test.txt",
+    "output_evaluation": "tests/evaluation_report_test.txt"
+  },
+  "setting": {
+    "img_size": 300,
+    "train_params": {
+      "label_mode": "categorical",
+      "color_mode": "rgb",
+      "batch_size": 8,
+      "image_size": [300, 300],
+      "seed": 42
+    },
+    "batch": 8,
+    "epochs_for_training": 10,
+    "epochs": 1,
+    "classes": ["BLA", "EBO", "MMZ", "NGS"],
+    "num_classes": 4
+  }
+}
