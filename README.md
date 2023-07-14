@@ -46,7 +46,7 @@ In order to be able to classify the images they need to be dowloaded first from 
     - `MMZ/0001-1000` - Contains 1000 images belonging to class MMZ.
     - `NGS/0001-1000` - Contains 1000 images belonging to class NGS.
 
-4. Repeating the step 2 and 3 per each class in the subfolders `2001-3000`, but this time download only the first 100 images per each class, another folder called `test_images` shall be created with the same structure. This smaller folder will be used in the evaluation module as a test set.
+6. Repeat the steps 2 and 3 per each class in the subfolders `2001-3000`, but this time download only the first 100 images per each class, another folder called `test_images` shall be created with the same structure. This smaller folder will be used in the evaluation module as a test set.
 
 The images IDs used are reported in the file [images_IDs](https://github.com/SaraPandolfi/BM_cell_classification/blob/master/images_IDs.txt).
 
@@ -54,11 +54,11 @@ The images IDs used are reported in the file [images_IDs](https://github.com/Sar
 ## Usage
 To use the classification model on the built images folders the following steps can be performed:
 1. Parameters setting:
-    The parameters stored in the config.ini file can be used directly or modified according to the user's requests.
+    The parameters stored in the [config.json](https://github.com/SaraPandolfi/BM_cell_classification/blob/master/config.json) file can be used directly or modified according to the user's requests.
 2. Program execution:
     The classification is performed by executing the [script.py](https://github.com/SaraPandolfi/BM_cell_classification/blob/master/script.py)
 3. Model results:
-    The resulting statistics of the model will be printed out both in the terminal and in the files indicated in the config.ini file as 'output_evaluation' and 'output_report'. Moreover the saved weights will be found at the path 'best_efficientnet.h5' and the trained model at 'model.json'.
+    The resulting statistics of the model will be printed out both in the terminal and in the files indicated in the config.json file as 'output_evaluation' and 'output_report'. Moreover the saved weights will be found at the path 'best_efficientnet.h5' and the trained model at 'model.json'.
     
 ## Testing
 
@@ -76,7 +76,7 @@ The project has been subdivided as follows:
     - dataset.py - module to create the train and test dataset from specific folders
     - model.py - module to create and train the model
     - evaluate.py - module to evaluate the trained model by the classification report of sklearn 
-    - config.ini - configuration file to use by configparser
+    - config.json - configuration file to use by configparser
 - `tests/` - test routine, one per each module, with own parameters file
 
 Due to the large amount of data stored in this dataset, only 1000 images from each of the four classes mentioned above have been used for the training and validation of the network, while a total of 100 images, equally subdivided between the classes have been used to evaluate the classification performed. The folders, subfolders and IDs are stored in the file *images_IDs*.
